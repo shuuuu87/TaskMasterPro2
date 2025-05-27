@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-trophy me-2"></i>Leaderboard
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if users %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="80">Rank</th>
+                                <th>User</th>
+                                <th>Badge</th>
+                                <th>Status</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr {% if user.id == current_user.id %}class="table-primary"{% endif %}>
+                                <td>
+                                    {% if loop.index <= 3 %}
+                                        {% if loop.index == 1 %}
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-crown me-1"></i>#1
+                                            </span>
+                                        {% elif loop.index == 2 %}
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-medal me-1"></i>#2
+                                            </span>
+                                        {% elif loop.index == 3 %}
+                                            <span class="badge bg-dark">
+                                                <i class="fas fa-medal me-1"></i>#3
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">#{{ loop.index }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user-circle me-2 text-muted"></i>
+                                        <div>
+                                            <div class="fw-bold">{{ user.username }}</div>
+                                            {% if user.id == current_user.id %}
+                                                <small class="text-primary">That's you!</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% set badge = user.get_badge() %}
+                                    <span class="badge" style="background-color: {{ badge.color }};">
+                                        <i class="fas fa-medal me-1"></i>{{ badge.name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if user.is_online() %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-circle me-1"></i>Online
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-circle me-1"></i>Offline
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">{{ user.total_score }}</span>
+                                    <small class="text-muted">points</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-trophy display-1 text-muted mb-3"></i>
+                    <h5 class="text-muted">No scores yet</h5>
+                    <p class="text-muted">Complete some tasks to appear on the leaderboard!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Badge Information -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Badge System Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Earn points by completing tasks and unlock amazing badges! Here's how the badge system works:</p>
+                
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="badge-info-card">
+                            <h6 class="fw-bold">Beginner Tiers</h6>
+                            <ul class="list-unstyled small mb-0">
+                                <li><span class="badge" style="background-color: #8B4513;"><i class="fas fa-medal me-1"></i>Wood</span> 0 points</li>
+                                <li><span class="badge" style="background-color: #CD7F32;"><i class="fas fa-medal me-1"></i>Bronze</span> 1-50 points</li>
+                                <li><span class="badge" style="background-color: #CD7F32;"><i class="fas fa-medal me-1"></i>Bronze 2</span> 51-100 points</li>
+                                <li><span class="badge" style="background-color: #CD7F32;"><i class="fas fa-medal me-1"></i>Bronze 3</span> 101-150 points</li>
+                                <li><span class="badge" style="background-color: #C0C0C0;"><i class="fas fa-medal me-1"></i>Silver</span> 151-200 points</li>
+                                <li><span class="badge" style="background-color: #C0C0C0;"><i class="fas fa-medal me-1"></i>Silver 2</span> 201-250 points</li>
+                                <li><span class="badge" style="background-color: #C0C0C0;"><i class="fas fa-medal me-1"></i>Silver 3</span> 251-300 points</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-lg-4">
+                        <div class="badge-info-card">
+                            <h6 class="fw-bold">Intermediate Tiers</h6>
+                            <ul class="list-unstyled small mb-0">
+                                <li><span class="badge" style="background-color: #FFD700;"><i class="fas fa-medal me-1"></i>Gold</span> 301-400 points</li>
+                                <li><span class="badge" style="background-color: #ffd900;"><i class="fas fa-medal me-1"></i>Gold 2</span> 401-500 points</li>
+                                <li><span class="badge" style="background-color: #FFD700;"><i class="fas fa-medal me-1"></i>Gold 3</span> 501-600 points</li>
+                                <li><span class="badge" style="background-color: #FFD700;"><i class="fas fa-medal me-1"></i>Gold 4</span> 601-700 points</li>
+                                <li><span class="badge" style="background-color: #c9aff8;"><i class="fas fa-medal me-1"></i>Platinum</span> 701-850 points</li>
+                                <li><span class="badge" style="background-color: #c9aff8;"><i class="fas fa-medal me-1"></i>Platinum 2</span> 851-1000 points</li>
+                                <li><span class="badge" style="background-color: #c9aff8;"><i class="fas fa-medal me-1"></i>Platinum 3</span> 1001-1150 points</li>
+                                <li><span class="badge" style="background-color: #c9aff8;"><i class="fas fa-medal me-1"></i>Platinum 4</span> 1151-1300 points</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-lg-4">
+                        <div class="badge-info-card">
+                            <h6 class="fw-bold">Advanced Tiers</h6>
+                            <ul class="list-unstyled small mb-0">
+                                <li><span class="badge" style="background-color: #61e2ff;"><i class="fas fa-medal me-1"></i>Diamond</span> 1301-1450 points</li>
+                                <li><span class="badge" style="background-color: #61e2ff;"><i class="fas fa-medal me-1"></i>Diamond 2</span> 1451-1600 points</li>
+                                <li><span class="badge" style="background-color: #61e2ff;"><i class="fas fa-medal me-1"></i>Diamond 3</span> 1601-1750 points</li>
+                                <li><span class="badge" style="background-color: #61e2ff;"><i class="fas fa-medal me-1"></i>Diamond 4</span> 1751-1900 points</li>
+                                <li><span class="badge" style="background-color: #f32929;"><i class="fas fa-medal me-1"></i>Heroic</span> 1901-2100 points</li>
+                                <li><span class="badge" style="background-color: #9932CC;"><i class="fas fa-medal me-1"></i>Master</span> 2101-2350 points</li>
+                                <li><span class="badge" style="background-color: #4B0082;"><i class="fas fa-medal me-1"></i>Elite Master</span> 2351-2650 points</li>
+                                <li><span class="badge" style="background-color: #ff9900;"><i class="fas fa-medal me-1"></i>Grand Master</span> 2651+ points</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-3 p-3 bg-light rounded">
+                    <h6 class="fw-bold mb-2">How to earn points:</h6>
+                    <ul class="mb-0">
+                        <li>Complete tasks to earn points based on time spent</li>
+                        <li>Earn <strong>1 point for every 12 minutes</strong> of task completion</li>
+                        <li>This equals <strong>5 points per hour</strong> of productive work</li>
+                        <li>Stay consistent to climb the leaderboard and unlock higher badges!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,348 @@
+Task Manager Reborn — Full App Explanation
+
+
+---
+
+1. Goal & Concept
+
+Your app is a personal productivity tracker where users:
+
+Add daily tasks with custom durations.
+
+Start, pause, and resume tasks using a responsive timer.
+
+Earn 5 points per hour of total task completion (e.g., 2 x 30 min tasks = 1 hour = 5 points) means 12 min = 1 point .
+
+View their weekly progress in a time-based line graph which reset weekly.
+
+Compete with others via a Leaderboard ranked by total score and give batcheses based on points acchived by user.
+
+Use the app on both phone and laptop, with a modern, animated UI and fullscreen support.
+
+
+
+---
+
+2. App Structure
+
+Project Folder:
+
+task_manager_reborn/
+├── app/
+│   ├── init.py
+│   ├── models.py
+│   ├── routes/
+│   │   ├── auth.py
+│   │   ├── home.py
+│   │   ├── progress.py
+│   │   └── leaderboard.py
+│   ├── forms.py
+│   └── templates/
+│       ├── base.html
+│       ├── login.html
+│       ├── register.html
+│       ├── index.html
+│       ├── progress.html
+│       └── leaderboard.html
+├── static/
+│   └── js/
+│       └── main.js
+├── task_manager.db
+├── config.py
+├── run.py
+└── requirements.txt
+
+
+
+---
+
+3. Frontend Logic (HTML, CSS, JS)
+
+Main Features:
+
+Home Page (index.html)
+
+Responsive task cards with:
+
+Task name
+
+Countdown timer display (timer-{taskId})
+te task get automatically complete when time hit 00:00
+
+Buttons: Start, Pause, Resume, Fullscreen
+
+
+Modal for fullscreen timer view
+
+Total score displayed at top with user name 
+
+
+JavaScript (main.js)
+
+Handles timer control & UI state using a class: TimerManager.
+
+Main JS Functions:
+
+startTimer(taskId, duration)
+Starts or resumes a timer. Stores timer state in localStorage.
+
+pauseTimer(taskId)
+Pauses the current task. Saves elapsed time.
+
+resumeTimer(taskId)
+Resumes from pause using saved time.
+
+updateAllTimers()
+Updates UI every second. If timer ends, it auto-submits.
+
+updateTimerDisplay(taskId, remaining)
+Changes the visible time on UI and fullscreen.
+
+updateTimerControls(taskId, state)
+Hides/shows buttons depending on whether the task is idle, running, or paused.
+
+Fullscreen Mode
+Timer expands into a fullscreen modal. Button controls like pause/resume/complete are available.
+
+Form Submission for Task Completion ( task get complete when countdown timer hit 00:00 )
+Calculates and sends actualMinutes based on time used.
+
+
+
+---
+
+4. Backend Logic (Flask)
+
+Authentication (auth.py)
+
+Register, login, logout routes, any user can enter in any other user's account if he login with correct user name and password
+
+Uses Flask-Login for session handling
+
+
+Home (home.py)
+
+@login_required ensures only signed-in users can add/view tasks.
+
+Handles:
+
+Adding new tasks
+
+Marking a task complete
+
+Calculating time taken
+
+Updating total score
+
+
+
+Progress Page (progress.py)
+
+Shows a line graph of total minutes (not number of tasks) completed per day
+
+Uses Chart.js or Recharts (via JSON passed to HTML)
+
+Graph resets every 7 days for each user
+
+
+Leaderboard (leaderboard.py)
+
+Displays all users sorted by their total score
+
+Updates automatically as users complete tasks
+
+give information about leader board at last of leaderboard page 
+
+give badge to user based on points like(every badge should have special logo):
+if  user has 0 point = Wood
+if user has 1 point - 50 point = Bronze 
+if user has 51 point - 100 point = Bronze 2
+if user has 101 point - 150 point = Bronze 3
+if user has 151 point - 200 point = Silver  
+if user has 201 point - 250 point = Silver 2
+if user has 251 point - 300 point = Silver 3
+if user has 301 point - 400 point = Gold 
+if user has 401 point - 500 point = Gold 2
+if user has 501 point - 600 point = Gold 3
+if user has 601 point - 700 point = Gold 4
+if user has 701 point - 850 point = Platinum 
+if user has 851 point - 1000 point = Platinum 2
+if user has 1001 point - 1150 point = Platinum 3
+if user has 1151 point - 1300 point = Platinum 4
+if user has 1301 point - 1450 point = Diamond 
+if user has 1451 point - 1600 point = Diamond 2
+if user has 1601 point - 1750 point = Diamond 3
+if user has 1751 point - 1900 point = Diamond 4
+if user has 1900 point - 2100 point = Heroic
+if user has 2101 point - 2350 point = master
+if user has 2351point - 2650 point = Elite Master
+if user has 2651 point and further = Grand Master
+---
+
+5. Database (models.py)
+
+User Model
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True)
+    email = db.Column(db.String(120), unique=True)
+    password_hash = db.Column(db.String(128))
+    total_score = db.Column(db.Integer, default=0)
+    tasks = db.relationship('Task', backref='owner', lazy='dynamic')
+
+Task Model
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    duration_minutes = db.Column(db.Integer)
+    actual_minutes = db.Column(db.Integer)
+    completed = db.Column(db.Boolean, default=False)
+    date_created = db.Column(db.Date)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
+---
+
+6. Points System
+
+Each completed task contributes to the total score.
+
+Score = 5 points per hour of total completed time or 1 point 12 min.
+
+Example:
+
+Task 1: 30 min
+
+Task 2: 30 min
+
+Score = 1 hour = 5 points
+
+
+
+
+This is calculated by summing up total actual_minutes, dividing by 60, and multiplying by 5.
+
+
+---
+
+7. Progress Graph
+
+Shows user's time spent per day for the past 7 days
+
+When a task is completed:
+
+Backend updates the total time for that day
+
+Graph reflects the new value
+
+
+Chart refreshes automatically each time the page loads
+
+Resets after 7 days to start fresh tracking
+
+
+
+---
+
+8. Leaderboard System
+
+Pulls all users with non-zero scores
+
+Renders a descending list: Top scorer at the top
+
+show wether the user is online or offline
+
+give badges to user accordng to points 
+
+Refreshes automatically after a new task is completed
+
+
+
+---
+
+9. Fullscreen Task View
+
+Each task card has a fullscreen option:
+
+Opens a modal (#fullscreenTimerModal)
+
+Displays current countdown
+
+Includes:
+
+Task name
+
+Timer display
+
+Pause / Resume 
+
+
+
+Fullscreen Actions:
+
+Synced with main timer (no duplication)
+
+On time ended task get complete, submits actual time taken to the form and triggers backend update
+
+
+
+---
+
+10. Device Responsiveness
+
+Mobile and pc-Friendly Layout
+
+All pages scale cleanly using Bootstrap grid
+
+Buttons are touch-sized
+
+Modals fit screen
+
+
+Laptop Support
+
+Expands layout
+
+Larger fonts and spacing
+
+Graph looks richer on bigger screens
+
+
+
+
+---
+
+11. Styling & Animations
+
+Each page has modern design:
+
+ues light blue and white colour in designing 
+
+Soft shadows
+
+Rounded cards
+
+Subtle hover transitions
+
+Icons for timer and controls
+
+
+Backgrounds are responsive and stylish
+
+Uses Bootstrap, custom CSS, and JS animations
+
+
+
+---
+
+12. Future Ideas (Optional Extensions)
+
+Here are some things you might add later:
+
+Notifications when timer ends
+
+Charts comparing this week vs last week
+
+Profile page with insights

@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- User Stats Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-gradient-primary text-white">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="mb-1">Welcome back, {{ current_user.username }}!</h3>
+                        <p class="mb-0">Keep up the great work on your productivity journey</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="display-6 fw-bold">{{ current_user.total_score }} points</div>
+                        {% set badge = current_user.get_badge() %}
+                        <span class="badge" style="background-color: {{ badge.color }}; font-size: 1rem;">
+                            <i class="fas fa-medal me-1"></i>{{ badge.name }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add New Task -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Task</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('home.add_task') }}">
+                    {{ task_form.hidden_tag() }}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ task_form.name.label(class="form-label") }}
+                            {{ task_form.name(class="form-control", placeholder="Enter task name") }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ task_form.duration_minutes.label(class="form-label") }}
+                            {{ task_form.duration_minutes(class="form-control", placeholder="e.g., 30") }}
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            {{ task_form.submit(class="btn btn-primary w-100") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Completed Tasks -->
+{% if completed_today %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-success bg-opacity-10 border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-check-circle me-2"></i>Today's Completed Tasks
+                    <span class="badge bg-light text-success">{{ completed_today|length }}</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    {% for task in completed_today %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="completed-task-item p-3 bg-white rounded border border-success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 text-success">{{ task.name }}</h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ task.actual_minutes }} min completed
+                                        <span class="ms-2 text-success">
+                                            <i class="fas fa-star me-1"></i>{{ task.calculate_points() }} pts
+                                        </span>
+                                    </small>
+                                </div>
+                                <div class="text-success">
+                                    <i class="fas fa-check-circle fs-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="mt-3 text-center">
+                    <small class="text-success fw-bold">
+                        <i class="fas fa-trophy me-1"></i>
+                        Today's Total: {{ today_total_minutes }} minutes • {{ today_total_points }} points earned
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Task List -->
+<div class="row">
+    <div class="col-12">
+        <h4 class="mb-3">
+            <i class="fas fa-list-check me-2"></i>Active Tasks
+            <span class="badge bg-secondary">{{ tasks|length }}</span>
+        </h4>
+        
+        {% if tasks %}
+        <div class="row g-3">
+            {% for task in tasks %}
+            <div class="col-lg-6 col-xl-4">
+                <div class="card task-card h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ task.name }}</h6>
+                        <p class="text-muted small mb-2">
+                            <i class="fas fa-clock me-1"></i>{{ task.duration_minutes }} minutes
+                        </p>
+                        
+                        <!-- Timer Display -->
+                        <div class="timer-display mb-3" id="timer-{{ task.id }}">
+                            <div class="display-6 text-primary font-monospace">
+                                {{ '%02d:%02d'|format(task.duration_minutes // 60, task.duration_minutes % 60) }}
+                            </div>
+                        </div>
+                        
+                        <!-- Timer Controls -->
+                        <div class="timer-controls" id="controls-{{ task.id }}">
+                            <div class="d-flex gap-2 mb-2">
+                                <button class="btn btn-success btn-sm flex-fill" onclick="timerManager.startTimer({{ task.id }}, {{ task.duration_minutes }})">
+                                    <i class="fas fa-play me-1"></i>Start
+                                </button>
+                                <button class="btn btn-warning btn-sm flex-fill" onclick="timerManager.pauseTimer({{ task.id }})" style="display: none;" id="pause-{{ task.id }}">
+                                    <i class="fas fa-pause me-1"></i>Pause
+                                </button>
+                                <button class="btn btn-info btn-sm flex-fill" onclick="timerManager.resumeTimer({{ task.id }})" style="display: none;" id="resume-{{ task.id }}">
+                                    <i class="fas fa-play me-1"></i>Resume
+                                </button>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary btn-sm flex-fill" onclick="timerManager.openFullscreen({{ task.id }}, '{{ task.name }}')">
+                                    <i class="fas fa-expand me-1"></i>Fullscreen
+                                </button>
+                                <a href="{{ url_for('home.delete_task', task_id=task.id) }}" class="btn btn-outline-danger btn-sm flex-fill" onclick="return confirm('Are you sure you want to delete this task?')">
+                                    <i class="fas fa-trash me-1"></i>Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-clipboard-list display-1 text-muted mb-3"></i>
+            <h5 class="text-muted">No active tasks</h5>
+            <p class="text-muted">Add your first task above to get started!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Hidden Complete Task Form -->
+<form method="POST" action="{{ url_for('home.complete_task') }}" id="completeTaskForm" style="display: none;">
+    {{ complete_form.hidden_tag() }}
+    {{ complete_form.task_id() }}
+    {{ complete_form.actual_minutes() }}
+    {{ complete_form.submit() }}
+</form>
+
+<script>
+// Initialize timer manager when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.timerManager = new TimerManager();
+});
+</script>
+{% endblock %}

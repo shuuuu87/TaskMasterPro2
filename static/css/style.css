@@ -1,0 +1,288 @@
+:root {
+    --primary-blue: 210 100% 56%; /* #007bff */
+    --light-blue: 210 75% 96%; /* #e7f3ff */
+    --background: 210 11% 98%; /* #f8f9fa */
+    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --card-shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --border-radius: 0.75rem;
+    --transition: all 0.3s ease;
+}
+
+body {
+    background-color: hsl(var(--background));
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* Task Card Specific Styles */
+.task-card {
+    background: linear-gradient(135deg, #fff 0%, hsl(var(--light-blue)) 100%);
+    border-left: 4px solid hsl(var(--primary-blue));
+}
+
+.task-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 123, 255, 0.15);
+}
+
+/* Timer Display */
+.timer-display {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    text-align: center;
+    border: 2px dashed hsl(var(--primary-blue));
+    transition: var(--transition);
+}
+
+.timer-display.running {
+    background: rgba(40, 167, 69, 0.1);
+    border-color: #28a745;
+    animation: pulse 2s infinite;
+}
+
+.timer-display.paused {
+    background: rgba(255, 193, 7, 0.1);
+    border-color: #ffc107;
+}
+
+.timer-display.completed {
+    background: rgba(40, 167, 69, 0.1);
+    border-color: #28a745;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+    }
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: var(--transition);
+    border: none;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, hsl(var(--primary-blue)) 0%, hsl(210 100% 45%) 100%);
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+}
+
+/* Navigation */
+.navbar {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-bottom: 1px solid hsl(var(--light-blue));
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* Gradient Background for Header Cards */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary-blue)) 0%, hsl(210 100% 45%) 100%);
+}
+
+/* Stats Cards */
+.stats-card {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: var(--border-radius);
+    text-align: center;
+    border: 1px solid hsl(var(--light-blue));
+}
+
+/* Badge Info Cards */
+.badge-info-card {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    border: 1px solid hsl(var(--light-blue));
+    height: 100%;
+}
+
+/* Timer Controls */
+.timer-controls {
+    transition: var(--transition);
+}
+
+.timer-controls .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Fullscreen Modal */
+.modal-fullscreen .modal-content {
+    background: linear-gradient(135deg, hsl(var(--primary-blue)) 0%, hsl(210 100% 45%) 100%);
+}
+
+.modal-fullscreen .display-1 {
+    font-size: 6rem;
+    font-weight: 300;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    font-family: 'Courier New', monospace;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-fullscreen .display-1 {
+        font-size: 4rem;
+    }
+    
+    .timer-display {
+        padding: 0.75rem;
+    }
+    
+    .timer-display .display-6 {
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .modal-fullscreen .display-1 {
+        font-size: 3rem;
+    }
+    
+    .timer-controls .btn {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+}
+
+/* Table Styles */
+.table {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.table-hover tbody tr:hover {
+    background-color: hsl(var(--light-blue));
+}
+
+/* Alert Styles */
+.alert {
+    border: none;
+    border-radius: var(--border-radius);
+    border-left: 4px solid hsl(var(--primary-blue));
+}
+
+/* Form Styles */
+.form-control, .form-select {
+    border-radius: 0.5rem;
+    border: 1px solid hsl(var(--light-blue));
+    transition: var(--transition);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: hsl(var(--primary-blue));
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Loading Animation */
+.loading {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Badge Enhancements */
+.badge {
+    font-weight: 500;
+    border-radius: 0.5rem;
+    padding: 0.5em 0.75em;
+}
+
+/* Scroll Smooth */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus Styles for Accessibility */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    outline: 2px solid hsl(var(--primary-blue));
+    outline-offset: 2px;
+}
+
+/* Task Completion Animation */
+.task-completed {
+    animation: taskComplete 0.6s ease-in-out;
+}
+
+@keyframes taskComplete {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Completed Tasks Styling */
+.completed-task-item {
+    transition: var(--transition);
+    animation: slideInFromRight 0.5s ease-out;
+}
+
+.completed-task-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
