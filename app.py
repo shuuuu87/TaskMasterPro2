@@ -45,6 +45,8 @@ from routes.auth import auth_bp
 from routes.home import home_bp
 from routes.progress import progress_bp
 from routes.leaderboard import leaderboard_bp
+from dotenv import load_dotenv
+load_dotenv()
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(home_bp)
