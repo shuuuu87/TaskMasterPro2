@@ -51,6 +51,15 @@ class TimerManager {
      * Start or resume a timer for a task
      */
     startTimer(taskId, durationMinutes) {
+        // Check if any other timer is currently running
+        for (const [otherTaskId, otherState] of this.timers.entries()) {
+            if (otherTaskId !== taskId && otherState.isRunning) {
+                // Pause the currently running timer
+                this.pauseTimer(otherTaskId);
+                break;
+            }
+        }
+
         const now = new Date();
         let state = this.timers.get(taskId);
 
@@ -109,6 +118,15 @@ class TimerManager {
      * Resume a paused timer
      */
     resumeTimer(taskId) {
+        // Check if any other timer is currently running
+        for (const [otherTaskId, otherState] of this.timers.entries()) {
+            if (otherTaskId !== taskId && otherState.isRunning) {
+                // Pause the currently running timer
+                this.pauseTimer(otherTaskId);
+                break;
+            }
+        }
+
         const state = this.timers.get(taskId);
         if (!state || !state.isPaused) return;
 

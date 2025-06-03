@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from datetime import datetime
+from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 from models import Task
-from forms import TaskForm, CompleteTaskForm
+from forms import TaskForm, CompleteTaskForm, ProfileForm
 
 home_bp = Blueprint('home', __name__)
 
@@ -33,6 +34,7 @@ def index():
     
     task_form = TaskForm()
     complete_form = CompleteTaskForm()
+    profile_form = ProfileForm(original_username=current_user.username)
     
     return render_template('index.html', 
                          title='Task Manager', 
@@ -42,6 +44,7 @@ def index():
                          today_total_points=today_total_points,
                          task_form=task_form,
                          complete_form=complete_form,
+                         profile_form=profile_form,
                          current_user=current_user)
 
 @home_bp.route('/add_task', methods=['POST'])
@@ -104,5 +107,35 @@ def delete_task(task_id):
     db.session.delete(task)
     db.session.commit()
     flash('Task deleted successfully!')
+    
+    return redirect(url_for('home.index'))
+
+@home_bp.route('/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    form = ProfileForm(original_username=current_user.username)
+    if form.validate_on_submit():
+        # Verify current password
+        if not check_password_hash(current_user.password_hash, form.current_password.data):
+            flash('Current password is incorrect.')
+            return redirect(url_for('home.index'))
+        
+        # Update username if changed
+        if form.username.data != current_user.username:
+            current_user.username = form.username.data
+        
+        # Update password if provided
+        if form.new_password.data:
+            current_user.password_hash = generate_password_hash(form.new_password.data)
+        
+        # Update last active time
+        current_user.last_active = datetime.utcnow()
+        
+        db.session.commit()
+        flash('Profile updated successfully!')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'{field}: {error}')
     
     return redirect(url_for('home.index'))

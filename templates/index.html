@@ -26,7 +26,7 @@
 
 <!-- Add New Task -->
 <div class="row mb-4">
-    <div class="col-12">
+    <div class="col-md-8">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Task</h5>
@@ -35,11 +35,11 @@
                 <form method="POST" action="{{ url_for('home.add_task') }}">
                     {{ task_form.hidden_tag() }}
                     <div class="row g-3">
-                        <div class="col-md-6">
+                        <div class="col-md-7">
                             {{ task_form.name.label(class="form-label") }}
                             {{ task_form.name(class="form-control", placeholder="Enter task name") }}
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             {{ task_form.duration_minutes.label(class="form-label") }}
                             {{ task_form.duration_minutes(class="form-control", placeholder="e.g., 30") }}
                         </div>
@@ -48,6 +48,51 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Settings -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-cog me-2"></i>Profile Settings
+                    <button class="btn btn-sm btn-outline-primary float-end" type="button" data-bs-toggle="collapse" data-bs-target="#profileForm">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="collapse" id="profileForm">
+                    <form method="POST" action="{{ url_for('home.update_profile') }}">
+                        {{ profile_form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ profile_form.username.label(class="form-label") }}
+                            {{ profile_form.username(class="form-control", value=current_user.username) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ profile_form.current_password.label(class="form-label") }}
+                            {{ profile_form.current_password(class="form-control", placeholder="Required to save changes") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ profile_form.new_password.label(class="form-label") }}
+                            {{ profile_form.new_password(class="form-control", placeholder="Leave blank to keep current") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ profile_form.confirm_password.label(class="form-label") }}
+                            {{ profile_form.confirm_password(class="form-control") }}
+                        </div>
+                        <div class="d-grid">
+                            {{ profile_form.submit(class="btn btn-success") }}
+                        </div>
+                    </form>
+                </div>
+                <div class="profile-info">
+                    <p class="mb-2"><strong>Username:</strong> {{ current_user.username }}</p>
+                    <p class="mb-2"><strong>Email:</strong> {{ current_user.email }}</p>
+                    <p class="mb-0"><strong>Total Score:</strong> {{ current_user.total_score }} points</p>
+                </div>
             </div>
         </div>
     </div>
