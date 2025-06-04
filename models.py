@@ -63,11 +63,11 @@ class User(UserMixin, db.Model):
             return {'name': 'Grand Master', 'color': "#ff9900"}
     
     def is_online(self):
-        """Check if user is online (active within last 1 minutes)"""
+        """Check if user is online (active within last 10 minutes)"""
         from datetime import timedelta
         if not self.last_active:
             return False
-        return datetime.utcnow() - self.last_active < timedelta(minutes=1)
+        return datetime.utcnow() - self.last_active < timedelta(minutes=10)
     
     def get_weekly_minutes(self):
         """Get total minutes completed in the last 7 days"""
