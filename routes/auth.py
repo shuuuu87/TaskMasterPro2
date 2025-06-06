@@ -1,11 +1,17 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 from models import User
 from forms import LoginForm, RegistrationForm
+from flask import send_from_directory
+from app import app 
 
 auth_bp = Blueprint('auth', __name__)
+
+@app.route('/google24c6dec42ac4918a.html')
+def google_verify():
+    return send_from_directory('static', 'google24c6dec42ac4918a.html')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
