@@ -5,15 +5,16 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 from models import Task
 from forms import TaskForm, CompleteTaskForm, ProfileForm
-from flask import current_app
+from flask import send_from_directory
 
 home_bp = Blueprint('home', __name__)
 
 @home_bp.route('/google24c6dec42ac4918a.html')
 def google_verify():
-    return current_app.send_static_file('google24c6dec42ac4918a.html')
+    return send_from_directory('static', 'google24c6dec42ac4918a.html')
 
 @home_bp.route('/')
+
 @home_bp.route('/index')
 @login_required
 def index():
