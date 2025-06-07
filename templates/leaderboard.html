@@ -20,6 +20,7 @@
                                 <th>Badge</th>
                                 <th>Status</th>
                                 <th>Score</th>
+                                <th>Last Online</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -76,7 +77,14 @@
                                     <span class="fw-bold text-primary">{{ user.total_score }}</span>
                                     <small class="text-muted">points</small>
                                 </td>
-                            </tr>
+                                <td>
+                                    {% if user.last_active %}
+                                        <small class="text-muted">{{ user.last_active.strftime('%b %d, %Y %I:%M %p') }}</small>
+                                    {% else %}
+                                         <small class="text-muted">Never</small>
+                                    {% endif %}
+                                </td>
+                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>

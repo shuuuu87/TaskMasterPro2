@@ -8,6 +8,8 @@ from flask_login import LoginManager
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from datetime import timedelta
+from flask_login import current_user
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -38,6 +40,13 @@ db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Please log in to access this page.'
+
+@app.before_request
+def update_last_active():
+    if current_user.is_authenticated:
+        current_user.last_active = datetime.utcnow()
+        db.session.commit()
+
 
 @login_manager.user_loader
 def load_user(user_id):
