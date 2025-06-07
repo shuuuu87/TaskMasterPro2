@@ -25,42 +25,44 @@ class User(UserMixin, db.Model):
             return {'name': 'Bronze 3', 'color': '#CD7F32'}
         elif 151 <= score <= 200:
             return {'name': 'Silver', 'color': '#C0C0C0'}
-        elif 201 <= score <= 250:
+        elif 201 <= score <= 300:
             return {'name': 'Silver 2', 'color': '#C0C0C0'}
-        elif 251 <= score <= 300:
-            return {'name': 'Silver 3', 'color': '#C0C0C0'}
         elif 301 <= score <= 400:
-            return {'name': 'Gold', 'color': '#FFD700'}
+            return {'name': 'Silver 3', 'color': '#C0C0C0'}
         elif 401 <= score <= 500:
-            return {'name': 'Gold 2', 'color': '#FFD700'}
+            return {'name': 'Gold', 'color': '#FFD700'}
         elif 501 <= score <= 600:
-            return {'name': 'Gold 3', 'color': '#FFD700'}
+            return {'name': 'Gold 2', 'color': '#FFD700'}
         elif 601 <= score <= 700:
+            return {'name': 'Gold 3', 'color': '#FFD700'}
+        elif 701 <= score <= 800:
             return {'name': 'Gold 4', 'color': '#FFD700'}
-        elif 701 <= score <= 850:
+        elif 801 <= score <= 950:
             return {'name': 'Platinum', 'color': '#c9aff8'}
-        elif 851 <= score <= 1000:
+        elif 951 <= score <= 1100:
             return {'name': 'Platinum 2', 'color': '#c9aff8'}
-        elif 1001 <= score <= 1150:
+        elif 1101 <= score <= 1250:
             return {'name': 'Platinum 3', 'color': '#c9aff8'}
-        elif 1151 <= score <= 1300:
+        elif 1251 <= score <= 1400:
             return {'name': 'Platinum 4', 'color': '#c9aff8'}
-        elif 1301 <= score <= 1450:
+        elif 1401 <= score <= 1550:
             return {'name': 'Diamond', 'color': '#61e2ff'}
-        elif 1451 <= score <= 1600:
+        elif 1551 <= score <= 1750:
             return {'name': 'Diamond 2', 'color': '#61e2ff'}
-        elif 1601 <= score <= 1750:
+        elif 1751 <= score <= 1950:
             return {'name': 'Diamond 3', 'color': '#61e2ff'}
-        elif 1751 <= score <= 1900:
+        elif 1951 <= score <= 2200:
             return {'name': 'Diamond 4', 'color': '#61e2ff'}
-        elif 1901 <= score <= 2100:
-            return {'name': 'Heroic', 'color': '#f32929'}
-        elif 2101 <= score <= 2350:
+        elif 2201 <= score <= 2450:
+            return {'name': 'Heroic', 'color': "#f34129"}
+        elif 2451 <= score <= 2850:
             return {'name': 'Master', 'color': '#9932CC'}
-        elif 2351 <= score <= 2650:
+        elif 2851 <= score <= 3500:
             return {'name': 'Elite Master', 'color': '#4B0082'}
+        elif 3501 <= score <= 4500:
+            return {'name': 'Grand Master', 'color': '#ff9900'}
         else:
-            return {'name': 'Grand Master', 'color': "#ff9900"}
+            return {'name': 'legend⚜🔱⚜', 'color': "#F0E054FF"}
     
     def is_online(self):
         """Check if user is online (active within last 10 minutes)"""
