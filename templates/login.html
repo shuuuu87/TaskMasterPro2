@@ -35,6 +35,11 @@
                         </div>
                         {% endif %}
                     </div>
+
+                    <div class="form-check mb-3">
+                        {{ form.remember(class="form-check-input") }}
+                        {{ form.remember.label(class="form-check-label") }}
+                    </div>
                     
                     <div class="d-grid gap-2">
                         {{ form.submit(class="btn btn-primary") }}

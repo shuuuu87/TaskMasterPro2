@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
+from datetime import timedelta
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -28,6 +29,9 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
 }
+
+
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=365*100)
 
 # initialize extensions
 db.init_app(app)
