@@ -10,6 +10,10 @@ leaderboard_bp = Blueprint('leaderboard', __name__)
 def leaderboard():
     # Get all users ordered by total score (descending)
     users = User.query.filter(User.total_score > 0).order_by(desc(User.total_score)).all()
+
+    for u in User.query.all():
+        print(u.username, u.last_active)
+
     
     # Add users with 0 score at the end
     zero_score_users = User.query.filter(User.total_score == 0).order_by(User.username).all()
