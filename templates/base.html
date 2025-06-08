@@ -87,6 +87,25 @@
         {% endwith %}
     </div>
 
+        <!-- Notification Sound Script -->
+    <script>
+        function playNotificationSound() {
+            const audio = new Audio('/static/sounds/notification.mp3');
+            audio.play().catch(err => {
+                console.log("Autoplay blocked or error playing sound:", err);
+            });
+        }
+
+        // Optional: Auto-play sound when a flash message appears
+        document.addEventListener("DOMContentLoaded", function () {
+            const alerts = document.querySelectorAll('.alert');
+            if (alerts.length > 0) {
+                playNotificationSound();
+            }
+        });
+    </script>
+       
+
     <!-- Main Content -->
     <main class="container mt-4">
         {% block content %}{% endblock %}
