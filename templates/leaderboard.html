@@ -78,11 +78,7 @@
                                     <small class="text-muted">points</small>
                                 </td>
                                 <td>
-                                    {% if user.is_online %}
-                                        <span class="text-success fw-bold">Currently Online</span>
-                                     {% else %}
-                                        {{ user.last_online.strftime('%b %d, %Y %I:%M %p') if user.last_online else 'Never' }}
-                                    {% endif %}
+                                    {{ user.last_active_display }}
                                 </td>
                              </tr>
                             {% endfor %}
