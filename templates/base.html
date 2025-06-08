@@ -142,21 +142,18 @@
     
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
     <script>
-        const clickSound = new Audio('/static/sounds/click.mp3');
+        // Create audio object once
+        const clickSound = new Audio('{{ url_for("static", filename="sounds/click.mp3") }}');
 
-        function playClickSound() {
-            clickSound.currentTime = 0; // rewind to start
-            clickSound.play().catch(err => {
-                console.log("Click sound error:", err);
-            });
-        }
-
-        // Automatically attach sound to all buttons (optional)
-        document.addEventListener("DOMContentLoaded", function () {
-            const buttons = document.querySelectorAll("button");
-            buttons.forEach(btn => {
-                btn.addEventListener("click", playClickSound);
+        // Add click event listener to every button
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    clickSound.currentTime = 0; // rewind to start
+                    clickSound.play().catch(e => console.log("Sound blocked by browser:", e));
+                });
             });
         });
     </script>
