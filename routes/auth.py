@@ -22,7 +22,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and check_password_hash(user.password_hash, form.password.data):
-            login_user(user, remember=True , remember=form.remember.data)
+            login_user(user, remember=True )
             # Update last active time
             from datetime import datetime
             user.last_active = datetime.utcnow()
