@@ -46,6 +46,8 @@ def update_last_active():
     if current_user.is_authenticated:
         current_user.last_active = datetime.utcnow()
         db.session.commit()
+        logging.debug(f"Updated last_active for {current_user.username} at {current_user.last_active}")
+
 
 
 @login_manager.user_loader
