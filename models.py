@@ -96,6 +96,7 @@ class Task(db.Model):
     actual_minutes = db.Column(db.Integer, default=0)
     completed = db.Column(db.Boolean, default=False)
     date_created = db.Column(db.Date, default=date.today)
+    completed_at = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
     def calculate_points(self):
