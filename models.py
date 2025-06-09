@@ -38,13 +38,13 @@ class User(UserMixin, db.Model):
         elif 701 <= score <= 800:
             return {'name': 'Gold 4', 'color': '#FFD700'}
         elif 801 <= score <= 950:
-            return {'name': 'Platinum', 'color': '#c9aff8'}
+            return {'name': 'Platinum', 'color': "#f7f7f7"}
         elif 951 <= score <= 1100:
-            return {'name': 'Platinum 2', 'color': '#c9aff8'}
+            return {'name': 'Platinum 2', 'color': '#f7f7f7'}
         elif 1101 <= score <= 1250:
-            return {'name': 'Platinum 3', 'color': '#c9aff8'}
+            return {'name': 'Platinum 3', 'color': '#f7f7f7'}
         elif 1251 <= score <= 1400:
-            return {'name': 'Platinum 4', 'color': '#c9aff8'}
+            return {'name': 'Platinum 4', 'color': '#f7f7f7'}
         elif 1401 <= score <= 1550:
             return {'name': 'Diamond', 'color': '#61e2ff'}
         elif 1551 <= score <= 1750:
