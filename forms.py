@@ -30,7 +30,7 @@ class RegistrationForm(FlaskForm):
 class TaskForm(FlaskForm):
     name = StringField('Task Name', validators=[DataRequired(), Length(max=100)])
     duration_minutes = IntegerField('Duration (minutes)', validators=[
-        DataRequired(), NumberRange(min=1, max=480, message="Duration must be between 1 and 480 minutes")])
+        DataRequired(), NumberRange(min=1, max=480, message="Duration must be between 1 and 1000 minutes")])
     submit = SubmitField('Add Task')
 
 class CompleteTaskForm(FlaskForm):
