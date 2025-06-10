@@ -59,6 +59,7 @@ def load_user(user_id):
 from routes.auth import auth_bp
 from routes.home import home_bp
 from routes.progress import progress_bp
+from routes.syllabus import syllabus_bp
 from routes.leaderboard import leaderboard_bp
 from dotenv import load_dotenv
 load_dotenv()
@@ -67,6 +68,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(home_bp)
 app.register_blueprint(progress_bp)
 app.register_blueprint(leaderboard_bp)
+app.register_blueprint(syllabus_bp)
 
 with app.app_context():
     # Import models to ensure tables are created

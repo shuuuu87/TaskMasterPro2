@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ subject.name }}</h2>
+<form method="post" action="{{ url_for('syllabus.add_chapter', subject_id=subject.id) }}" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="title" class="form-control" placeholder="Add new chapter..." required>
+        <button class="btn btn-primary" type="submit">Add Chapter</button>
+    </div>
+</form>
+{% for chapter in subject.chapters %}
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>{{ chapter.title }}</strong>
+        <span class="float-end">{{ chapter.progress() }}% Complete</span>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{{ url_for('syllabus.add_topic', chapter_id=chapter.id) }}" class="mb-2">
+            <div class="input-group">
+                <input type="text" name="name" class="form-control" placeholder="Add new topic..." required>
+                <button class="btn btn-secondary" type="submit">Add Topic</button>
+            </div>
+        </form>
+        <ul class="list-group">
+            {% for topic in chapter.topics %}
+            <li class="list-group-item d-flex align-items-center">
+                <form method="post" action="{{ url_for('syllabus.toggle_topic', topic_id=topic.id) }}" class="me-2">
+                    <input type="checkbox" onchange="this.form.submit()" {% if topic.completed %}checked{% endif %}>
+                </form>
+                <span {% if topic.completed %}style="text-decoration: line-through;"{% endif %}>{{ topic.name }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endfor %}
+<a href="{{ url_for('syllabus.dashboard') }}" class="btn btn-link">← Back to Syllabus</a>
+{% endblock %}

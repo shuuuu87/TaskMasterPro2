@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Your Syllabus</h2>
+<form method="post" action="{{ url_for('syllabus.add_subject') }}" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="name" class="form-control" placeholder="Add new subject..." required>
+        <button class="btn btn-primary" type="submit">Add Subject</button>
+    </div>
+</form>
+<div class="row">
+  {% for subject in subjects %}
+    <div class="col-md-4">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5>{{ subject.name }}</h5>
+          <div class="progress mb-2">
+            <div class="progress-bar" role="progressbar" style="width: {{ subject.progress() }}%;" aria-valuenow="{{ subject.progress() }}" aria-valuemin="0" aria-valuemax="100">{{ subject.progress() }}%</div>
+          </div>
+          <a href="{{ url_for('syllabus.subject_detail', subject_id=subject.id) }}" class="btn btn-outline-primary btn-sm">Open</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

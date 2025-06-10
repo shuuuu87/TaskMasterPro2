@@ -102,3 +102,33 @@ class Task(db.Model):
     def calculate_points(self):
         """Calculate points for this task (1 point per 12 minutes)"""
         return int(self.actual_minutes / 12) if self.actual_minutes else 0
+
+class Subject(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    chapters = db.relationship('Chapter', backref='subject', cascade="all, delete-orphan", lazy='dynamic')
+
+    def progress(self):
+        chapters = self.chapters.all()
+        if not chapters:
+            return 0
+        return int(sum([c.progress() for c in chapters]) / len(chapters))
+
+class Chapter(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable=False)
+    topics = db.relationship('Topic', backref='chapter', cascade="all, delete-orphan", lazy='dynamic')
+
+    def progress(self):
+        topics = self.topics.all()
+        if not topics:
+            return 0
+        return int(100 * sum([1 for t in topics if t.completed]) / len(topics))
+
+class Topic(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    completed = db.Column(db.Boolean, default=False)
+    chapter_id = db.Column(db.Integer, db.ForeignKey('chapter.id'), nullable=False)

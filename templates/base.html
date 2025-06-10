@@ -44,6 +44,11 @@
                             <i class="fas fa-trophy me-1"></i>Leaderboard
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('syllabus.dashboard') }}">
+                            <i class="fas fa-book me-1"></i>Syllabus
+                        </a>
+                    </li>
                     {% endif %}
                 </ul>
                 
@@ -87,7 +92,7 @@
         {% endwith %}
     </div>
 
-        <!-- Notification Sound Script -->
+    <!-- Notification Sound Script -->
     <script>
         function playNotificationSound() {
             const audio = new Audio('/static/sounds/notification.mp3');
