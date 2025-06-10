@@ -4,6 +4,40 @@ from models import db, Subject, Chapter, Topic
 
 syllabus_bp = Blueprint('syllabus', __name__, url_prefix='/syllabus')
 
+@syllabus_bp.route('/delete_subject/<int:subject_id>', methods=['POST'])
+@login_required
+def delete_subject(subject_id):
+    subject = Subject.query.get_or_404(subject_id)
+    if subject.user_id != current_user.id:
+        abort(403)
+    db.session.delete(subject)
+    db.session.commit()
+    return redirect(url_for('syllabus.dashboard'))
+
+@syllabus_bp.route('/delete_chapter/<int:chapter_id>', methods=['POST'])
+@login_required
+def delete_chapter(chapter_id):
+    chapter = Chapter.query.get_or_404(chapter_id)
+    if chapter.subject.user_id != current_user.id:
+        abort(403)
+    subject_id = chapter.subject_id
+    db.session.delete(chapter)
+    db.session.commit()
+    return redirect(url_for('syllabus.subject_detail', subject_id=subject_id))
+
+@syllabus_bp.route('/delete_topic/<int:topic_id>', methods=['POST'])
+@login_required
+def delete_topic(topic_id):
+    topic = Topic.query.get_or_404(topic_id)
+    chapter = topic.chapter
+    if chapter.subject.user_id != current_user.id:
+        abort(403)
+    subject_id = chapter.subject_id
+    db.session.delete(topic)
+    db.session.commit()
+    return redirect(url_for('syllabus.subject_detail', subject_id=subject_id))
+
+
 @syllabus_bp.route('/')
 @login_required
 def dashboard():
