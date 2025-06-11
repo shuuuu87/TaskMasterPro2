@@ -10,19 +10,39 @@ progress_bp = Blueprint('progress', __name__)
 
 def get_current_streak(user):
     today = date.today()
-    streak = 0
     day = today
+
+    # Get today's time spent
+    prev_minutes = db.session.query(
+        func.sum(Task.duration_minutes)
+    ).filter(
+        Task.user_id == user.id,
+        func.date(Task.completed_at) == day
+    ).scalar() or 0
+
+    if prev_minutes == 0:
+        return 0  # No work today = no streak
+
+    streak = 1  # Start with today included
+    day -= timedelta(days=1)
+
     while True:
-        completed = Task.query.filter(
+        current_minutes = db.session.query(
+            func.sum(Task.duration_minutes)
+        ).filter(
             Task.user_id == user.id,
             func.date(Task.completed_at) == day
-        ).first()
-        if completed:
+        ).scalar() or 0
+
+        if current_minutes >= prev_minutes:
             streak += 1
+            prev_minutes = current_minutes
             day -= timedelta(days=1)
         else:
             break
+
     return streak
+
 
 @progress_bp.route('/progress')
 @login_required

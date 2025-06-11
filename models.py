@@ -90,11 +90,12 @@ class User(UserMixin, db.Model):
         ).scalar() or 0
 
 class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    duration_minutes = db.Column(db.Integer, nullable=False)
+    duration_minutes = db.Column(db.Integer, nullable=False, default=0)
     actual_minutes = db.Column(db.Integer, default=0)
     completed = db.Column(db.Boolean, default=False)
+    title = db.Column(db.String(100))
     date_created = db.Column(db.Date, default=date.today)
     completed_at = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

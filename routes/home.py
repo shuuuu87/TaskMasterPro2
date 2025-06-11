@@ -88,6 +88,8 @@ def complete_task():
         # Update task
         task.actual_minutes = int(form.actual_minutes.data)
         task.completed = True
+        task.completed_at = datetime.utcnow()
+
         
         # Calculate points and update user score
         points_earned = task.calculate_points()
