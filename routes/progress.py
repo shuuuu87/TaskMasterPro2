@@ -12,20 +12,32 @@ def get_current_streak(user):
     today = date.today()
     day = today
 
-    # Step 1: Get total actual_minutes for today
-    prev_minutes = db.session.query(
+    # Get total actual_minutes for today and yesterday
+    today_minutes = db.session.query(
         func.sum(Task.actual_minutes)
     ).filter(
         Task.user_id == user.id,
-        func.date(Task.completed_at) == day
+        func.date(Task.completed_at) == today
     ).scalar() or 0
 
-    if prev_minutes == 0:
+    if today_minutes == 0:
         return 0  # No work today = no streak
 
-    streak = 1  # Start with today
-    day -= timedelta(days=1)
+    yesterday = today - timedelta(days=1)
+    yesterday_minutes = db.session.query(
+        func.sum(Task.actual_minutes)
+    ).filter(
+        Task.user_id == user.id,
+        func.date(Task.completed_at) == yesterday
+    ).scalar() or 0
 
+    if today_minutes < yesterday_minutes:
+        return 0  # Today's work is less than yesterday, streak broken
+
+    # Continue streak as long as each day >= next day
+    streak = 1
+    prev_minutes = today_minutes
+    day = today - timedelta(days=1)
     while True:
         current_minutes = db.session.query(
             func.sum(Task.actual_minutes)
@@ -34,9 +46,16 @@ def get_current_streak(user):
             func.date(Task.completed_at) == day
         ).scalar() or 0
 
-        if current_minutes >= prev_minutes:
+        next_day = day + timedelta(days=1)
+        next_day_minutes = db.session.query(
+            func.sum(Task.actual_minutes)
+        ).filter(
+            Task.user_id == user.id,
+            func.date(Task.completed_at) == next_day
+        ).scalar() or 0
+
+        if current_minutes >= next_day_minutes and current_minutes > 0:
             streak += 1
-            prev_minutes = current_minutes
             day -= timedelta(days=1)
         else:
             break

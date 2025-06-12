@@ -14,11 +14,28 @@ class TimerManager {
             const saved = localStorage.getItem('timerStates');
             if (saved) {
                 const states = JSON.parse(saved);
+                const now = new Date();
                 for (const [taskId, state] of Object.entries(states)) {
-                    this.timers.set(parseInt(taskId), {
+                    let newState = {
                         ...state,
                         startTime: state.startTime ? new Date(state.startTime) : null
-                    });
+                    };
+                    // If timer was running, update elapsed and remaining based on time passed
+                    if (newState.isRunning && newState.startTime) {
+                        const elapsedMs = now - newState.startTime;
+                        const elapsedSeconds = Math.floor(elapsedMs / 1000);
+                        newState.elapsedSeconds = (newState.elapsedSeconds || 0) + elapsedSeconds;
+                        newState.remainingSeconds = Math.max(0, newState.durationMinutes * 60 - newState.elapsedSeconds);
+                        // If time is up, mark as not running
+                        if (newState.remainingSeconds === 0) {
+                            newState.isRunning = false;
+                            newState.isPaused = false;
+                        } else {
+                            // Reset startTime to now for continued timing
+                            newState.startTime = now;
+                        }
+                    }
+                    this.timers.set(parseInt(taskId), newState);
                 }
             }
         } catch (error) {
