@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Global Notifications -->
+{% if global_notifications %}
+<div class="row mb-3">
+    <div class="col-12">
+        {% for notif in global_notifications %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ notif.message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 <!-- User Stats Header -->
 <div class="row mb-4">
     <div class="col-12">

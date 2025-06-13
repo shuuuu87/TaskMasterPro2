@@ -133,3 +133,9 @@ class Topic(db.Model):
     name = db.Column(db.String(200), nullable=False)
     completed = db.Column(db.Boolean, default=False)
     chapter_id = db.Column(db.Integer, db.ForeignKey('chapter.id'), nullable=False)
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)

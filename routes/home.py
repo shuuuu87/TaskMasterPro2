@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
-from models import Task
+from models import Task, User
 from forms import TaskForm, CompleteTaskForm, ProfileForm
 from flask import send_from_directory
 
@@ -21,10 +21,10 @@ def index():
     # Update user's last active time
     current_user.last_active = datetime.utcnow()
     db.session.commit()
-    
+
     # Get incomplete tasks for current user
     tasks = Task.query.filter_by(user_id=current_user.id, completed=False).all()
-    
+
     # Get today's completed tasks
     from datetime import date
     today = date.today()
@@ -33,25 +33,30 @@ def index():
         completed=True, 
         date_created=today
     ).order_by(Task.id.desc()).all()
-    
+
     # Calculate today's totals
     today_total_minutes = sum(task.actual_minutes for task in completed_today)
     today_total_points = sum(task.calculate_points() for task in completed_today)
-    
+
     task_form = TaskForm()
     complete_form = CompleteTaskForm()
     profile_form = ProfileForm(original_username=current_user.username)
-    
+
+    # Show global notifications (active only)
+    from models import Notification
+    global_notifications = Notification.query.filter_by(is_active=True).order_by(Notification.created_at.desc()).all()
+
     return render_template('index.html', 
-                         title='Task Manager', 
-                         tasks=tasks, 
-                         completed_today=completed_today,
-                         today_total_minutes=today_total_minutes,
-                         today_total_points=today_total_points,
-                         task_form=task_form,
-                         complete_form=complete_form,
-                         profile_form=profile_form,
-                         current_user=current_user)
+                     title='Task Manager', 
+                     tasks=tasks, 
+                     completed_today=completed_today,
+                     today_total_minutes=today_total_minutes,
+                     today_total_points=today_total_points,
+                     task_form=task_form,
+                     complete_form=complete_form,
+                     profile_form=profile_form,
+                     current_user=current_user,
+                     global_notifications=global_notifications)
 
 @home_bp.route('/add_task', methods=['POST'])
 @login_required
@@ -85,18 +90,33 @@ def complete_task():
             flash('Unauthorized access to task.')
             return redirect(url_for('home.index'))
         
+        # Calculate user's rank before completing the task
+        users = User.query.filter(User.total_score > 0).order_by(User.total_score.desc()).all()
+        prev_rank = [u.id for u in users].index(current_user.id) + 1 if current_user.id in [u.id for u in users] else len(users) + 1
+
         # Update task
         task.actual_minutes = int(form.actual_minutes.data)
         task.completed = True
         task.completed_at = datetime.utcnow()
 
-        
         # Calculate points and update user score
         points_earned = task.calculate_points()
         current_user.total_score += points_earned
-        
         db.session.commit()
         flash(f'Task completed! You earned {points_earned} points.')
+
+        # Calculate user's rank after completing the task
+        users = User.query.filter(User.total_score > 0).order_by(User.total_score.desc()).all()
+        new_rank = [u.id for u in users].index(current_user.id) + 1 if current_user.id in [u.id for u in users] else len(users) + 1
+
+        if new_rank < prev_rank:
+            flash(f'🎉 Congratulations! You climbed to rank #{new_rank} on the leaderboard!')
+        # If user reaches rank 1, create a global notification
+        if new_rank == 1 and prev_rank != 1:
+            from models import Notification
+            notif = Notification(message=f'🏆 {current_user.username} is now #1 on the leaderboard!')
+            db.session.add(notif)
+            db.session.commit()
     else:
         flash('Error completing task.')
     
