@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Calendar heatmap
             const calendarMinutes = data.calendar_minutes;
             const today = new Date();
-            const daysBack = 60;
+            const daysBack = 1000;
             const heatmap = document.getElementById('calendar-heatmap');
             heatmap.innerHTML = '';
 
@@ -125,16 +125,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 return 5;
             }
 
-            for (let i = daysBack; i >= 0; i--) {
+            // Only show the last 1000 days (not including today)
+            for (let i = daysBack; i > 0; i--) {
                 const d = new Date(today);
                 d.setDate(today.getDate() - i);
                 const key = d.toISOString().slice(0, 10);
                 const minutes = calendarMinutes[key] || 0;
                 const level = getLevel(minutes);
+                const streaks = data.calendar_streaks || {};
+                const streak = streaks[key] !== undefined ? streaks[key] : 0;
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'heatmap-day';
                 dayDiv.setAttribute('data-count', level);
-                dayDiv.title = `${key}: ${minutes} minute${minutes === 1 ? '' : 's'} completed`;
+                dayDiv.title = `${key}: ${minutes} minute${minutes === 1 ? '' : 's'} completed\nStreak: ${streak} day${streak === 1 ? '' : 's'}`;
                 dayDiv.textContent = d.getDate();
                 heatmap.appendChild(dayDiv);
                 if (d.getDay() === 0) heatmap.appendChild(document.createElement('br'));

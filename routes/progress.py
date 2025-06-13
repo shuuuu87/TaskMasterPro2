@@ -65,17 +65,48 @@ def get_current_streak(user):
 @progress_bp.route('/progress')
 @login_required
 def progress():
-    streak = get_current_streak(current_user)
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+
+    # Get heatmap streaks for today and yesterday with strict increasing or equal minutes
+    days_back = 365
+    streaks = {}
+    streak = 0
+    prev_minutes = None
+    for i in range(days_back, -1, -1):
+        target_date = today - timedelta(days=i)
+        minutes = current_user.get_daily_minutes(target_date)
+        if minutes > 0:
+            if prev_minutes is None or minutes >= prev_minutes:
+                streak += 1
+            else:
+                streak = 1
+            streaks[str(target_date)] = streak
+        else:
+            if prev_minutes is not None and prev_minutes > 0:
+                streak = 0
+            streaks[str(target_date)] = streak
+        prev_minutes = minutes
+
+    today_minutes = current_user.get_daily_minutes(today)
+    yesterday_minutes = current_user.get_daily_minutes(yesterday)
+    if today_minutes > 0:
+        if today_minutes < yesterday_minutes and yesterday_minutes > 0:
+            current_streak = 0
+        else:
+            current_streak = streaks[str(today)]
+    else:
+        current_streak = streaks[str(yesterday)]
 
     # 💬 Flash messages
-    if streak == 0:
+    if current_streak == 0:
         flash("😢 You lost your streak. Start again today!")
-    elif streak == 1:
+    elif current_streak == 1:
         flash("👊 You're starting a new streak!")
-    elif streak > 1:
-        flash(f"🔥 You're on a {streak}-day streak!")
+    elif current_streak > 1:
+        flash(f"🔥 You're on a {current_streak}-day streak!")
 
-    return render_template('progress.html', title='Progress', streak=streak)
+    return render_template('progress.html', title='Progress', streak=current_streak)
 
 
 @progress_bp.route('/progress_data')
@@ -91,18 +122,35 @@ def progress_data():
         week_data.append(daily_minutes)
         labels.append(target_date.strftime('%a %d'))
 
-    # Calendar heatmap data (last 60 days)
-    days_back = 60
+    # Calendar heatmap data (last 1000 days)
+    days_back = 365
     calendar_minutes = {}
+    streaks = {}
+    streak = 0
+    prev_minutes = None
     for i in range(days_back, -1, -1):
         target_date = today - timedelta(days=i)
         minutes = current_user.get_daily_minutes(target_date)
         calendar_minutes[str(target_date)] = minutes
+
+        if minutes > 0:
+            if prev_minutes is None or minutes >= prev_minutes:
+                streak += 1
+            else:
+                streak = 1
+            streaks[str(target_date)] = streak
+        else:
+            # If no work today, streak is 0, but only break after a missed day
+            if prev_minutes is not None and prev_minutes > 0:
+                streak = 0
+            streaks[str(target_date)] = streak
+        prev_minutes = minutes
 
     return jsonify({
         'labels': labels,
         'data': week_data,
         'total_minutes': sum(week_data),
         'total_points': current_user.total_score,
-        'calendar_minutes': calendar_minutes
+        'calendar_minutes': calendar_minutes,
+        'calendar_streaks': streaks
     })
