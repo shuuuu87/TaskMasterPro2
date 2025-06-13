@@ -42,9 +42,19 @@ def index():
     complete_form = CompleteTaskForm()
     profile_form = ProfileForm(original_username=current_user.username)
 
-    # Show global notifications (active only)
-    from models import Notification
-    global_notifications = Notification.query.filter_by(is_active=True).order_by(Notification.created_at.desc()).all()
+    from models import Notification, NotificationRead
+    # Only show active notifications the user hasn't seen
+    seen_ids = [nr.notification_id for nr in NotificationRead.query.filter_by(user_id=current_user.id).all()]
+    global_notifications = Notification.query.filter(
+        Notification.is_active==True,
+        ~Notification.id.in_(seen_ids)
+    ).order_by(Notification.created_at.desc()).all()
+
+    # Mark these notifications as read for this user
+    for notif in global_notifications:
+        nr = NotificationRead(user_id=current_user.id, notification_id=notif.id)
+        db.session.add(nr)
+    db.session.commit()
 
     return render_template('index.html', 
                      title='Task Manager', 
@@ -111,9 +121,13 @@ def complete_task():
 
         if new_rank < prev_rank:
             flash(f'🎉 Congratulations! You climbed to rank #{new_rank} on the leaderboard!')
-        # If user reaches rank 1, create a global notification
+        # If user reaches rank 1, deactivate previous #1 notifications and create a new one
         if new_rank == 1 and prev_rank != 1:
             from models import Notification
+            # Deactivate all previous #1 notifications
+            Notification.query.filter(Notification.message.like('%#1 on the leaderboard!'), Notification.is_active==True).update({Notification.is_active: False})
+            db.session.commit()
+            # Create new notification
             notif = Notification(message=f'🏆 {current_user.username} is now #1 on the leaderboard!')
             db.session.add(notif)
             db.session.commit()

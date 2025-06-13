@@ -139,3 +139,9 @@ class Notification(db.Model):
     message = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
+
+class NotificationRead(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'), nullable=False)
+    read_at = db.Column(db.DateTime, default=datetime.utcnow)
