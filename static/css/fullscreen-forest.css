@@ -1,0 +1,17 @@
+.modal-fullscreen .modal-content {
+    background: url('../images/forest.jpg') center center/cover no-repeat !important;
+    position: relative;
+}
+
+.modal-fullscreen .modal-body {
+    background: rgba(0,0,0,0.3); /* Optional: dark overlay for readability */
+    border-radius: 1rem;
+}
+
+.modal-fullscreen .display-1, 
+.modal-fullscreen .modal-title, 
+.modal-fullscreen button, 
+.modal-fullscreen .btn {
+    color: #fff !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}

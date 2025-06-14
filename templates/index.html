@@ -229,6 +229,42 @@
     {{ complete_form.submit() }}
 </form>
 
+<!-- Fullscreen Timer Modal -->
+<div class="modal fade" id="fullscreenTimerModal" tabindex="-1" aria-labelledby="fullscreenTimerLabel" aria-hidden="true">
+    <style>
+    #fullscreenTimerModal .modal-content {
+        background: url('{{ url_for('static', filename='images/forest.jpg') }}') center center/cover no-repeat;
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+    }
+    </style>
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="fullscreenTimerLabel">
+          <i class="fas fa-clock me-2"></i>Task Timer - <span id="fullscreenTaskName"></span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="display-1 mb-4" id="fullscreenTimer">00:00:00</div>
+        <div class="d-flex justify-content-center gap-3 mb-4">
+          <button class="btn btn-success btn-lg" id="fullscreenStart" onclick="window.timerManager.startTimer(window.timerManager.fullscreenTaskId, window.timerManager.timers.get(window.timerManager.fullscreenTaskId)?.durationMinutes)">
+            <i class="fas fa-play me-1"></i>Start Timer
+          </button>
+          <button class="btn btn-warning btn-lg" id="fullscreenPause" style="display: none;">
+            <i class="fas fa-pause me-1"></i>Pause
+          </button>
+          <button class="btn btn-info btn-lg" id="fullscreenResume" style="display: none;">
+            <i class="fas fa-play me-1"></i>Resume
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // Initialize timer manager when page loads
 document.addEventListener('DOMContentLoaded', function() {

@@ -76,8 +76,8 @@ class TimerManager {
         if (!state) {
             // New timer
             state = {
-                durationMinutes: durationMinutes,
-                remainingSeconds: durationMinutes * 60,
+                durationMinutes: durationMinutes || 1, // fallback to 1 minute if undefined
+                remainingSeconds: (durationMinutes || 1) * 60,
                 elapsedSeconds: 0,
                 isRunning: true,
                 isPaused: false,
@@ -88,11 +88,23 @@ class TimerManager {
             state.isRunning = true;
             state.isPaused = false;
             state.startTime = now;
+            // Ensure durationMinutes and remainingSeconds are valid
+            if (!state.durationMinutes) state.durationMinutes = durationMinutes || 1;
+            if (typeof state.remainingSeconds !== 'number' || isNaN(state.remainingSeconds)) {
+                state.remainingSeconds = state.durationMinutes * 60;
+            }
         }
 
         this.timers.set(taskId, state);
         this.updateTimerControls(taskId, 'running');
         this.updateTimerDisplay(taskId);
+        // Update fullscreen timer display if in fullscreen
+        if (this.fullscreenTaskId === taskId) {
+            const fullscreenTimer = document.getElementById('fullscreenTimer');
+            if (fullscreenTimer) {
+                fullscreenTimer.textContent = this.formatTime(state.remainingSeconds);
+            }
+        }
         this.saveTimerStates();
     }
 
@@ -141,8 +153,6 @@ class TimerManager {
     // Update timer display for a specific task
     updateTimerDisplay(taskId, remainingSeconds = null) {
         const timerElement = document.getElementById(`timer-${taskId}`);
-        if (!timerElement) return;
-
         const state = this.timers.get(taskId);
         let seconds = remainingSeconds;
 
@@ -158,11 +168,11 @@ class TimerManager {
             }
         }
 
-        if (seconds !== null) {
+        // Update main timer display
+        if (timerElement) {
             const minutes = Math.floor(seconds / 60);
             const secs = seconds % 60;
             const timeStr = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            
             const displayElement = timerElement.querySelector('.display-6');
             if (displayElement) {
                 displayElement.textContent = timeStr;
@@ -177,19 +187,25 @@ class TimerManager {
                     }
                 }
             }
+        }
 
-            // Update fullscreen display if open
-            if (this.fullscreenTaskId === taskId) {
-                const fullscreenTimer = document.getElementById('fullscreenTimer');
-                if (fullscreenTimer) {
-                    fullscreenTimer.textContent = timeStr;
-                }
+        // Always update fullscreen timer display if open
+        if (this.fullscreenTaskId === taskId) {
+            const fullscreenTimer = document.getElementById('fullscreenTimer');
+            if (fullscreenTimer) {
+                // Use the same logic as formatTime for HH:MM:SS
+                let totalSeconds = seconds;
+                if (isNaN(totalSeconds) || totalSeconds < 0) totalSeconds = 0;
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const secs = totalSeconds % 60;
+                fullscreenTimer.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
             }
+        }
 
-            // Check if timer completed
-            if (seconds === 0 && state && state.isRunning) {
-                this.completeTask(taskId);
-            }
+        // Check if timer completed
+        if (seconds === 0 && state && state.isRunning) {
+            this.completeTask(taskId);
         }
     }
 
@@ -277,8 +293,16 @@ class TimerManager {
     openFullscreen(taskId, taskName) {
         this.fullscreenTaskId = taskId;
         document.getElementById('fullscreenTaskName').textContent = taskName;
-        this.updateTimerDisplay(taskId);
+        // Ensure timer display is valid
         const state = this.timers.get(taskId);
+        let displayTime = '00:00:00';
+        if (state && typeof state.remainingSeconds === 'number') {
+            displayTime = this.formatTime(state.remainingSeconds);
+        } else if (state && typeof state.durationMinutes === 'number') {
+            displayTime = this.formatTime(state.durationMinutes * 60);
+        }
+        const fullscreenTimer = document.getElementById('fullscreenTimer');
+        if (fullscreenTimer) fullscreenTimer.textContent = displayTime;
         if (state) {
             if (state.isRunning) {
                 this.updateTimerControls(taskId, 'running');
@@ -290,6 +314,19 @@ class TimerManager {
         }
         const modal = new bootstrap.Modal(document.getElementById('fullscreenTimerModal'));
         modal.show();
+    }
+
+    // Helper to format seconds as HH:MM:SS
+    formatTime(totalSeconds) {
+        if (isNaN(totalSeconds) || totalSeconds < 0) totalSeconds = 0;
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return (
+            String(hours).padStart(2, '0') + ':' +
+            String(minutes).padStart(2, '0') + ':' +
+            String(seconds).padStart(2, '0')
+        );
     }
 
     // Initialize fullscreen modal event handlers
