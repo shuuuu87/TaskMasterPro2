@@ -1,26 +1,33 @@
-from flask import Response, request
-from datetime import datetime, timedelta
-
-@app.route('/sitemap.xml', methods=['GET'])
-def sitemap():
-    pages = []
-    ten_days_ago = (datetime.now() - timedelta(days=10)).date().isoformat()
-
-    # Go through all routes in the Flask app
-    for rule in app.url_map.iter_rules():
-        if "GET" in rule.methods and len(rule.arguments) == 0:
-            pages.append(
-                f"""<url>
-                    <loc>{request.host_url[:-1]}{rule.rule}</loc>
-                    <lastmod>{ten_days_ago}</lastmod>
-                    <changefreq>monthly</changefreq>
-                    <priority>0.8</priority>
-                </url>"""
-            )
-
-    sitemap_xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        {''.join(pages)}
-    </urlset>"""
-
-    return Response(sitemap_xml, mimetype='application/xml')
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://taskmasterpro-b1nt.onrender.com/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://taskmasterpro-b1nt.onrender.com/login</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://taskmasterpro-b1nt.onrender.com/register</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://taskmasterpro-b1nt.onrender.com/leaderboard</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://taskmasterpro-b1nt.onrender.com/progress</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://taskmasterpro-b1nt.onrender.com/syllabus/dashboard</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+</urlset>
