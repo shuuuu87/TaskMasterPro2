@@ -75,9 +75,9 @@ with app.app_context():
     import models
     db.create_all()
 
-@app.route('/sitmap.xml')
+@app.route('/sitemap.xml')
 def sitemap_xml():
-    return send_from_directory(os.path.abspath(os.path.dirname(__file__)), 'sitmap.xml', mimetype='application/xml')
+    return send_from_directory(os.path.abspath(os.path.dirname(__file__)), 'sitemap.xml', mimetype='application/xml')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
