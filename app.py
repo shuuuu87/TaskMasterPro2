@@ -2,7 +2,7 @@ import os
 import logging
 from datetime import datetime, date
 
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from sqlalchemy.orm import DeclarativeBase
@@ -74,6 +74,10 @@ with app.app_context():
     # Import models to ensure tables are created
     import models
     db.create_all()
+
+@app.route('/sitmap.xml')
+def sitemap_xml():
+    return send_from_directory(os.path.abspath(os.path.dirname(__file__)), 'sitmap.xml', mimetype='application/xml')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
