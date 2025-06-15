@@ -13,6 +13,8 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/youricon.png') }}">
+    <meta property="og:image" content="{{ url_for('static', filename='images/youricon.png', _external=True) }}">
 </head>
 <body>
     <!-- Navigation -->
@@ -21,6 +23,10 @@
             <a class="navbar-brand fw-bold text-primary" href="{{ url_for('home.index') }}">
                 <i class="fas fa-tasks me-2"></i>Task Manager Reborn
             </a>
+            
+            <button class="btn btn-outline-secondary ms-2" id="theme-toggle" type="button">
+                <i class="fas fa-moon"></i> <span id="theme-toggle-text">Dark Mode</span>
+            </button>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>

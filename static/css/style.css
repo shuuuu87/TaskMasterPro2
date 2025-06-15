@@ -286,3 +286,94 @@ html {
         transform: translateX(0);
     }
 }
+
+/* Dark Mode Styles */
+:root[data-theme='dark'] {
+    --primary-blue: 210 100% 56%;
+    --light-blue: 210 75% 16%;
+    --background: 210 11% 10%;
+    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
+    --card-shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.7);
+}
+
+body[data-theme='dark'] {
+    background-color: hsl(var(--background));
+    color: #f1f1f1;
+}
+
+body[data-theme='dark'] .card,
+body[data-theme='dark'] .stats-card,
+body[data-theme='dark'] .timer-display {
+    background: #23272f;
+    color: #f1f1f1;
+    box-shadow: var(--card-shadow);
+}
+
+body[data-theme='dark'] .btn,
+body[data-theme='dark'] .btn-primary {
+    background: linear-gradient(135deg, #23272f 0%, hsl(var(--primary-blue)) 100%);
+    color: #fff;
+}
+
+body[data-theme='dark'] .navbar {
+    background: rgba(30, 30, 40, 0.95) !important;
+    border-bottom: 1px solid hsl(var(--light-blue));
+}
+
+body[data-theme='dark'] .bg-gradient-primary {
+    background: linear-gradient(135deg, #23272f 0%, hsl(var(--primary-blue)) 100%);
+}
+
+body[data-theme='dark'] .form-control {
+    background: #23272f;
+    color: #f1f1f1;
+    border: 1px solid #444;
+}
+
+body[data-theme='dark'] .form-control:focus {
+    background: #23272f;
+    color: #fff;
+    border-color: hsl(var(--primary-blue));
+}
+
+/* How to Earn Points Section */
+.how-to-earn-points {
+    transition: color 0.3s, background 0.3s;
+}
+
+body[data-theme='dark'] .how-to-earn-points {
+    background: #23272f;
+    color: #ffe066;
+}
+
+body[data-theme='dark'] .how-to-earn-points h6,
+body[data-theme='dark'] .how-to-earn-points strong {
+    color: #ffd43b;
+}
+
+/* Calendar Styles */
+.calendar-cell {
+    border: 1px solid hsl(var(--light-blue));
+    padding: 0.5rem;
+    text-align: center;
+}
+
+body[data-theme='dark'] .calendar-cell,
+body[data-theme='dark'] .calendar-cell * {
+    color: #f1f1f1 !important;
+    background: #23272f !important;
+    border-color: #444 !important;
+}
+
+/* Heatmap Calendar Colors */
+.heatmap-day[data-count="0"] { background: #e9ecef; color: #adb5bd; }
+.heatmap-day[data-count="1"] { background: #b2f2ff; color: #1864ab; }
+.heatmap-day[data-count="2"] { background: #63e6be; color: #1864ab; }
+.heatmap-day[data-count="3"] { background: #38d9a9; color: #fff; }
+.heatmap-day[data-count="4"] { background: #1971c2; color: #fff; }
+
+body[data-theme='dark'] .heatmap-day[data-count="0"] { background: #23272f; color: #495057; }
+body[data-theme='dark'] .heatmap-day[data-count="1"] { background: #1864ab; color: #fff; }
+body[data-theme='dark'] .heatmap-day[data-count="2"] { background: #1971c2; color: #fff; }
+body[data-theme='dark'] .heatmap-day[data-count="3"] { background: #38d9a9; color: #23272f; }
+body[data-theme='dark'] .heatmap-day[data-count="4"] { background: #63e6be; color: #23272f; }

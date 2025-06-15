@@ -290,8 +290,9 @@ class TimerManager {
     }
 
     // Open fullscreen timer modal
-    openFullscreen(taskId, taskName) {
+    openFullscreen(taskId, taskName, durationMinutes) {
         this.fullscreenTaskId = taskId;
+        this.fullscreenTaskDuration = durationMinutes; // Store the correct duration
         document.getElementById('fullscreenTaskName').textContent = taskName;
         // Ensure timer display is valid
         const state = this.timers.get(taskId);
@@ -300,6 +301,8 @@ class TimerManager {
             displayTime = this.formatTime(state.remainingSeconds);
         } else if (state && typeof state.durationMinutes === 'number') {
             displayTime = this.formatTime(state.durationMinutes * 60);
+        } else if (typeof durationMinutes === 'number') {
+            displayTime = this.formatTime(durationMinutes * 60);
         }
         const fullscreenTimer = document.getElementById('fullscreenTimer');
         if (fullscreenTimer) fullscreenTimer.textContent = displayTime;
@@ -405,7 +408,35 @@ class TimerManager {
     }
 }
 
-// Initialize timer manager when DOM is loaded
+// Theme toggle logic (global)
+function setTheme(theme) {
+    document.body.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    const icon = document.querySelector('#theme-toggle i');
+    const text = document.getElementById('theme-toggle-text');
+    if (icon && text) {
+        if (theme === 'dark') {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+            text.textContent = 'Light Mode';
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+            text.textContent = 'Dark Mode';
+        }
+    }
+    // Swap fullscreen background image
+    const fullscreenBg = document.getElementById('fullscreenBgImage');
+    if (fullscreenBg) {
+        if (theme === 'dark') {
+            fullscreenBg.src = '/static/images/forest2.jpg';
+        } else {
+            fullscreenBg.src = '/static/images/forest.jpg';
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     window.timerManager = new TimerManager();
     window.timerManager.cleanupStorage();
@@ -437,6 +468,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Set theme from localStorage or default to light
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            const current = document.body.getAttribute('data-theme') || 'light';
+            setTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    }
 });
 
 // Clean up on page unload

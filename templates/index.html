@@ -198,7 +198,7 @@
                                 </button>
                             </div>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-primary btn-sm flex-fill" onclick="timerManager.openFullscreen({{ task.id }}, '{{ task.name }}')">
+                                <button class="btn btn-primary btn-sm flex-fill" onclick="timerManager.openFullscreen({{ task.id }}, '{{ task.name }}', {{ task.duration_minutes }})">
                                     <i class="fas fa-expand me-1"></i>Fullscreen
                                 </button>
                                 <a href="{{ url_for('home.delete_task', task_id=task.id) }}" class="btn btn-outline-danger btn-sm flex-fill" onclick="return confirm('Are you sure you want to delete this task?')">
@@ -231,26 +231,19 @@
 
 <!-- Fullscreen Timer Modal -->
 <div class="modal fade" id="fullscreenTimerModal" tabindex="-1" aria-labelledby="fullscreenTimerLabel" aria-hidden="true">
-    <style>
-    #fullscreenTimerModal .modal-content {
-        background: url('{{ url_for('static', filename='images/forest.jpg') }}') center center/cover no-repeat;
-        background-size: cover;
-        background-position: center;
-        min-height: 100vh;
-    }
-    </style>
   <div class="modal-dialog modal-fullscreen">
-    <div class="modal-content">
-      <div class="modal-header">
+    <div class="modal-content position-relative">
+      <img id="fullscreenBgImage" src="{{ url_for('static', filename='images/forest.jpg') }}" alt="Background" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none;">
+      <div class="modal-header" style="position:relative;z-index:1;">
         <h5 class="modal-title" id="fullscreenTimerLabel">
           <i class="fas fa-clock me-2"></i>Task Timer - <span id="fullscreenTaskName"></span>
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body text-center">
+      <div class="modal-body text-center" style="position:relative;z-index:1;">
         <div class="display-1 mb-4" id="fullscreenTimer">00:00:00</div>
         <div class="d-flex justify-content-center gap-3 mb-4">
-          <button class="btn btn-success btn-lg" id="fullscreenStart" onclick="window.timerManager.startTimer(window.timerManager.fullscreenTaskId, window.timerManager.timers.get(window.timerManager.fullscreenTaskId)?.durationMinutes)">
+          <button class="btn btn-success btn-lg" id="fullscreenStart" onclick="window.timerManager.startTimer(window.timerManager.fullscreenTaskId, window.timerManager.fullscreenTaskDuration)">
             <i class="fas fa-play me-1"></i>Start Timer
           </button>
           <button class="btn btn-warning btn-lg" id="fullscreenPause" style="display: none;">
