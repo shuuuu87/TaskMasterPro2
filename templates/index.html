@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Due Task Reminders -->
+{% if due_notifications %}
+<div class="row mb-3">
+    <div class="col-12">
+        {% for notif in due_notifications %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ notif }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 <!-- Global Notifications -->
 {% if global_notifications %}
 <div class="row mb-3">
@@ -49,15 +63,15 @@
                 <form method="POST" action="{{ url_for('home.add_task') }}">
                     {{ task_form.hidden_tag() }}
                     <div class="row g-3">
-                        <div class="col-md-7">
+                        <div class="col-md-4">
                             {{ task_form.name.label(class="form-label") }}
                             {{ task_form.name(class="form-control", placeholder="Enter task name") }}
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             {{ task_form.duration_minutes.label(class="form-label") }}
                             {{ task_form.duration_minutes(class="form-control", placeholder="e.g., 30") }}
                         </div>
-                        <div class="col-md-2 d-flex align-items-end">
+                        <div class="col-md-12 d-flex align-items-end">
                             {{ task_form.submit(class="btn btn-primary w-100") }}
                         </div>
                     </div>

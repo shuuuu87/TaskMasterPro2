@@ -20,49 +20,67 @@ class User(UserMixin, db.Model):
         elif 1 <= score <= 50:
             return {'name': 'Bronze', 'color': '#CD7F32'}
         elif 51 <= score <= 100:
-            return {'name': 'Bronze 2', 'color': '#CD7F32'}
+            return {'name': 'Bronze 2', 'color': '#B87333'}
         elif 101 <= score <= 150:
-            return {'name': 'Bronze 3', 'color': '#CD7F32'}
+            return {'name': 'Bronze 3', 'color': '#A97142'}
         elif 151 <= score <= 200:
             return {'name': 'Silver', 'color': '#C0C0C0'}
         elif 201 <= score <= 300:
-            return {'name': 'Silver 2', 'color': '#C0C0C0'}
+            return {'name': 'Silver 2', 'color': '#BFC1C2'}
         elif 301 <= score <= 400:
-            return {'name': 'Silver 3', 'color': '#C0C0C0'}
+            return {'name': 'Silver 3', 'color': '#AFAFAF'}
         elif 401 <= score <= 500:
             return {'name': 'Gold', 'color': '#FFD700'}
         elif 501 <= score <= 600:
-            return {'name': 'Gold 2', 'color': '#FFD700'}
+            return {'name': 'Gold 2', 'color': '#FFC300'}
         elif 601 <= score <= 700:
-            return {'name': 'Gold 3', 'color': '#FFD700'}
+            return {'name': 'Gold 3', 'color': '#FFB300'}
         elif 701 <= score <= 800:
-            return {'name': 'Gold 4', 'color': '#FFD700'}
+            return {'name': 'Gold 4', 'color': '#FFA500'}
         elif 801 <= score <= 950:
-            return {'name': 'Platinum', 'color': "#d6d6d6"}
+            return {'name': 'Platinum', 'color': '#E5E4E2'}
         elif 951 <= score <= 1100:
-            return {'name': 'Platinum 2', 'color': '#d6d6d6'}
+            return {'name': 'Platinum 2', 'color': '#D4D4D4'}
         elif 1101 <= score <= 1250:
-            return {'name': 'Platinum 3', 'color': '#d6d6d6'}
+            return {'name': 'Platinum 3', 'color': '#B0B0B0'}
         elif 1251 <= score <= 1400:
-            return {'name': 'Platinum 4', 'color': '#d6d6d6'}
+            return {'name': 'Platinum 4', 'color': '#A9A9A9'}
         elif 1401 <= score <= 1550:
             return {'name': 'Diamond', 'color': '#61e2ff'}
         elif 1551 <= score <= 1750:
-            return {'name': 'Diamond 2', 'color': '#61e2ff'}
+            return {'name': 'Diamond 2', 'color': '#00BFFF'}
         elif 1751 <= score <= 1950:
-            return {'name': 'Diamond 3', 'color': '#61e2ff'}
+            return {'name': 'Diamond 3', 'color': '#1E90FF'}
         elif 1951 <= score <= 2200:
-            return {'name': 'Diamond 4', 'color': '#61e2ff'}
+            return {'name': 'Diamond 4', 'color': '#4682B4'}
         elif 2201 <= score <= 2450:
-            return {'name': 'Heroic', 'color': "#f34129"}
+            return {'name': 'Heroic', 'color': "#ff1e00"}
         elif 2451 <= score <= 2850:
             return {'name': 'Master', 'color': '#9932CC'}
-        elif 2851 <= score <= 3500:
+        elif 2851 <= score <= 3200:
             return {'name': 'Elite Master', 'color': '#4B0082'}
-        elif 3501 <= score <= 4500:
+        elif 3201 <= score <= 3600:
             return {'name': 'Grand Master', 'color': '#ff9900'}
-        else:
-            return {'name': 'legend⚜🔱⚜', 'color': "#F0E054FF"}
+        elif 3601 <= score <= 4000:
+            return {'name': 'Ascendant', 'color': "#796AFF"}
+        elif 4001 <= score <= 4500:
+            return {'name': 'Mythic', 'color': '#2F00FF'}
+        elif 4501 <= score <= 5000:
+            return {'name': 'Immortal', 'color': '#0C004D'}
+        elif 5001 <= score <= 5500:
+            return {'name': 'Celestial', 'color': '#010016'}
+        elif 5501 <= score <= 6000:
+            return {'name': 'Supreme', 'color': '#00F2FF'}
+        elif 6001 <= score <= 6500:
+            return {'name': 'Infinity', 'color': '#4587E3'}
+        elif 6501 <= score <= 7000:
+            return {'name': 'GrandmasterII', 'color': '#ff6200'}
+        elif 7001 <= score <= 7500:
+            return {'name': 'Hall of Fame', 'color': '#FFD700'}
+        elif 7501 <= score <= 8000:
+            return {'name': 'Titan', 'color': '#B8860B'}
+        elif 8001 <= score:
+            return {'name': 'Legend ⚜🔱⚜', 'color': '#F0E054'}
     
     def is_online(self):
         """Check if user is online (active within last 10 minutes)"""
@@ -99,7 +117,10 @@ class Task(db.Model):
     date_created = db.Column(db.Date, default=date.today)
     completed_at = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    
+    # New fields for features
+    reminder_sent = db.Column(db.Boolean, default=False)
+    # recurrence = db.Column(db.String(20), default=None)  # None, daily, weekly, monthly
+
     def calculate_points(self):
         """Calculate points for this task (1 point per 12 minutes)"""
         return int(self.actual_minutes / 12) if self.actual_minutes else 0

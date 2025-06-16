@@ -42,6 +42,9 @@ def index():
     complete_form = CompleteTaskForm()
     profile_form = ProfileForm(original_username=current_user.username)
 
+    # In-app due task reminders (next 24 hours) - removed due_date logic
+    due_notifications = []
+
     from models import Notification, NotificationRead
     # Only show active notifications the user hasn't seen
     seen_ids = [nr.notification_id for nr in NotificationRead.query.filter_by(user_id=current_user.id).all()]
@@ -66,7 +69,8 @@ def index():
                      complete_form=complete_form,
                      profile_form=profile_form,
                      current_user=current_user,
-                     global_notifications=global_notifications)
+                     global_notifications=global_notifications,
+                     due_notifications=due_notifications)
 
 @home_bp.route('/add_task', methods=['POST'])
 @login_required
@@ -111,26 +115,17 @@ def complete_task():
 
         # Calculate points and update user score
         points_earned = task.calculate_points()
+        previous_badge = current_user.get_badge()['name']
         current_user.total_score += points_earned
         db.session.commit()
+        new_badge = current_user.get_badge()['name']
         flash(f'Task completed! You earned {points_earned} points.')
+        if new_badge == 'Legend ⚜🔱⚜' and previous_badge != 'Legend ⚜🔱⚜':
+            flash('Congratulations! You have mastered the art of productivity and we will never forget you. Thank you for using our app—we are proud of you!', 'success')
 
-        # Calculate user's rank after completing the task
-        users = User.query.filter(User.total_score > 0).order_by(User.total_score.desc()).all()
-        new_rank = [u.id for u in users].index(current_user.id) + 1 if current_user.id in [u.id for u in users] else len(users) + 1
-
-        if new_rank < prev_rank:
-            flash(f'🎉 Congratulations! You climbed to rank #{new_rank} on the leaderboard!')
-        # If user reaches rank 1, deactivate previous #1 notifications and create a new one
-        if new_rank == 1 and prev_rank != 1:
-            from models import Notification
-            # Deactivate all previous #1 notifications
-            Notification.query.filter(Notification.message.like('%#1 on the leaderboard!'), Notification.is_active==True).update({Notification.is_active: False})
-            db.session.commit()
-            # Create new notification
-            notif = Notification(message=f'🏆 {current_user.username} is now #1 on the leaderboard!')
-            db.session.add(notif)
-            db.session.commit()
+        # --- Recurring Task Logic ---
+        # (recurrence logic removed, field no longer exists)
+        # --- End Recurring Task Logic ---
     else:
         flash('Error completing task.')
     
