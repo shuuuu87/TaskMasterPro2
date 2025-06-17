@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, abort
 from flask_login import login_required, current_user
 from models import db, Subject, Chapter, Topic
+from syllabus_data import SYLLABUS_DATA
 
 syllabus_bp = Blueprint('syllabus', __name__, url_prefix='/syllabus')
 
@@ -90,3 +91,20 @@ def toggle_topic(topic_id):
     topic.completed = not topic.completed
     db.session.commit()
     return redirect(url_for('syllabus.subject_detail', subject_id=chapter.subject_id))
+
+@syllabus_bp.route('/select_board_class', methods=['POST'])
+@login_required
+def select_board_class():
+    board = request.form.get('board')
+    class_ = request.form.get('class')
+    # Check if user already has subjects to avoid duplicates
+    existing_subjects = Subject.query.filter_by(user_id=current_user.id).all()
+    if not existing_subjects and board in SYLLABUS_DATA and class_ in SYLLABUS_DATA[board]:
+        for subject_name, chapters in SYLLABUS_DATA[board][class_].items():
+            subject = Subject(name=subject_name, user_id=current_user.id)
+            db.session.add(subject)
+            db.session.flush()  # Get subject.id before commit
+            for chapter_title in chapters:
+                db.session.add(Chapter(title=chapter_title, subject_id=subject.id))
+        db.session.commit()
+    return redirect(url_for('syllabus.dashboard'))

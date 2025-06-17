@@ -1,6 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Your Syllabus</h2>
+<!-- Board/Class selection form -->
+<form method="post" action="{{ url_for('syllabus.select_board_class') }}" class="mb-4">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label for="board" class="form-label">Board</label>
+            <select class="form-select" id="board" name="board" required>
+                <option value="">Select Board</option>
+                <option value="HSC">HSC (Maharashtra)</option>
+                <option value="CBSE">CBSE</option>
+                <option value="SSC">SSC</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="class" class="form-label">Class</label>
+            <select class="form-select" id="class" name="class" required>
+                <option value="">Select Class</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="6">6</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-success" type="submit">Load Syllabus</button>
+        </div>
+    </div>
+</form>
 <form method="post" action="{{ url_for('syllabus.add_subject') }}" class="mb-3">
     <div class="input-group">
         <input type="text" name="name" class="form-control" placeholder="Add new subject..." required>
