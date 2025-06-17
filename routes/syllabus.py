@@ -104,7 +104,15 @@ def select_board_class():
             subject = Subject(name=subject_name, user_id=current_user.id)
             db.session.add(subject)
             db.session.flush()  # Get subject.id before commit
-            for chapter_title in chapters:
-                db.session.add(Chapter(title=chapter_title, subject_id=subject.id))
+            for chapter in chapters:
+                if isinstance(chapter, dict) and 'chapter_name' in chapter:
+                    new_chapter = Chapter(title=chapter['chapter_name'], subject_id=subject.id)
+                    db.session.add(new_chapter)
+                    db.session.flush()  # Get chapter.id before adding topics
+                    for topic in chapter.get('topics', []):
+                        topic_name = topic['topic_name'] if isinstance(topic, dict) and 'topic_name' in topic else str(topic)
+                        db.session.add(Topic(name=topic_name, chapter_id=new_chapter.id))
+                else:
+                    db.session.add(Chapter(title=chapter, subject_id=subject.id))
         db.session.commit()
     return redirect(url_for('syllabus.dashboard'))
