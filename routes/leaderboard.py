@@ -3,7 +3,6 @@ from flask_login import login_required
 from models import User
 from sqlalchemy import desc
 from datetime import datetime
-from app import socketio
 
 leaderboard_bp = Blueprint('leaderboard', __name__)
 
@@ -33,7 +32,6 @@ def leaderboard():
     zero_score_users = User.query.filter(User.total_score == 0).order_by(User.username).all()
     all_users = users + zero_score_users
 
-    # Attach "last_active_display" to each user
     for user in all_users:
         user.last_active_display = time_since(user.last_active)
 
@@ -57,20 +55,3 @@ def api_leaderboard():
             'last_active_display': time_since(user.last_active),
         })
     return jsonify(leaderboard)
-
-def emit_leaderboard_update():
-    from flask import current_app
-    with current_app.app_context():
-        users = User.query.filter(User.total_score > 0).order_by(desc(User.total_score)).all()
-        zero_score_users = User.query.filter(User.total_score == 0).order_by(User.username).all()
-        all_users = users + zero_score_users
-        leaderboard_data = [
-            {
-                'username': u.username,
-                'total_score': u.total_score,
-                'badge': u.get_badge()['name'],
-                'last_active': time_since(u.last_active),
-                'is_online': u.is_online()
-            } for u in all_users
-        ]
-        socketio.emit('leaderboard_update', leaderboard_data, broadcast=True)
