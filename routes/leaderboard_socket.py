@@ -23,4 +23,4 @@ def emit_leaderboard_update():
             'is_online': user.is_online(),
             'streak': user.saved_streak,
         })
-    socketio.emit('leaderboard_update', leaderboard, broadcast=True)
+    socketio.emit('leaderboard_update', leaderboard)
