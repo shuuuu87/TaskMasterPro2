@@ -182,21 +182,57 @@ body {
     .card-body {
         padding: 1rem;
     }
+
+    /* Responsive leaderboard table */
+    .card-header {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 1rem !important;
+    }
+    .input-group {
+      width: 100% !important;
+      min-width: 0 !important;
+    }
+    .progress {
+      width: 100% !important;
+      margin-bottom: 0.5rem;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .table th, .table td {
+      white-space: nowrap;
+      font-size: 0.95rem;
+      padding: 0.4rem 0.5rem;
+    }
+    .dropdown-menu {
+      min-width: 200px;
+      font-size: 0.95rem;
+    }
 }
 
-@media (max-width: 576px) {
-    .modal-fullscreen .display-1 {
-        font-size: 3rem;
-    }
-    
-    .timer-controls .btn {
-        font-size: 0.75rem;
-        padding: 0.4rem 0.6rem;
-    }
-    
-    .navbar-brand {
-        font-size: 1.25rem;
-    }
+/* Accessibility: focus styles */
+.table th[tabindex="0"]:focus, .table th[tabindex="0"]:hover {
+  outline: 2px solid #007bff;
+  background: #e7f3ff;
+}
+
+/* Notification bell badge for better contrast */
+#notif-count {
+  border: 2px solid #fff;
+  font-size: 0.8rem;
+  min-width: 1.5em;
+  min-height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Streak/progress bar accessibility */
+#streak-bar {
+  font-size: 0.95rem;
+  color: #fff;
+  text-shadow: 0 1px 2px #0002;
 }
 
 /* Table Styles */

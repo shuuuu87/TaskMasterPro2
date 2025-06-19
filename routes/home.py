@@ -5,6 +5,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 from models import Task, User
 from forms import TaskForm, CompleteTaskForm, ProfileForm
+from routes.leaderboard_socket import emit_leaderboard_update
 
 home_bp = Blueprint('home', __name__)
 
@@ -83,6 +84,7 @@ def add_task():
         )
         db.session.add(task)
         db.session.commit()
+        emit_leaderboard_update()
         flash('Task added successfully!', 'info')
     else:
         for field, errors in form.errors.items():
@@ -112,6 +114,7 @@ def complete_task():
         previous_badge = current_user.get_badge()['name']
         current_user.total_score += points_earned
         db.session.commit()
+        emit_leaderboard_update()
         new_badge = current_user.get_badge()['name']
         flash(f'Task completed! You earned {points_earned} points.', 'success')
         if new_badge == 'Legend ⚜🔱⚜' and previous_badge != 'Legend ⚜🔱⚜':

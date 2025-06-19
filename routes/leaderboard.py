@@ -47,15 +47,16 @@ def api_leaderboard():
     users = User.query.filter(User.total_score > 0).order_by(desc(User.total_score)).all()
     zero_score_users = User.query.filter(User.total_score == 0).order_by(User.username).all()
     all_users = users + zero_score_users
-    leaderboard_data = [
-        {
-            'username': u.username,
-            'total_score': u.total_score,
-            'badge': u.get_badge()['name'],
-            'last_active': u.last_active_display if hasattr(u, 'last_active_display') else time_since(u.last_active)
-        } for u in all_users
-    ]
-    return jsonify(leaderboard_data)
+    leaderboard = []
+    for user in all_users:
+        leaderboard.append({
+            'id': user.id,
+            'username': user.username,
+            'score': user.total_score,
+            'last_active': user.last_active.isoformat() if user.last_active else None,
+            'last_active_display': time_since(user.last_active),
+        })
+    return jsonify(leaderboard)
 
 def emit_leaderboard_update():
     from flask import current_app
