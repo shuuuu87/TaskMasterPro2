@@ -45,6 +45,10 @@ login_manager.login_message = 'Please log in to access this page.'
 
 @app.before_request
 def update_last_active():
+    from flask import request
+    # Skip static files and favicon
+    if request.endpoint in ('static',) or request.path == '/favicon.ico':
+        return
     if current_user.is_authenticated:
         current_user.last_active = datetime.utcnow()
         db.session.commit()
