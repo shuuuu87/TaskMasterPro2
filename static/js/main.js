@@ -115,6 +115,7 @@ class TimerManager {
 
         state.isRunning = false;
         state.isPaused = true;
+        // Calculate elapsed time since start
         const now = new Date();
         if (state.startTime) {
             const elapsedMs = now - state.startTime;
@@ -153,6 +154,8 @@ class TimerManager {
     // Update timer display for a specific task
     updateTimerDisplay(taskId, remainingSeconds = null) {
         const timerElement = document.getElementById(`timer-${taskId}`);
+        if (!timerElement) return;
+
         const state = this.timers.get(taskId);
         let seconds = remainingSeconds;
 
@@ -217,6 +220,7 @@ class TimerManager {
 
         if (!startBtn || !pauseBtn || !resumeBtn) return;
 
+        // Hide all buttons first
         startBtn.style.display = 'none';
         pauseBtn.style.display = 'none';
         resumeBtn.style.display = 'none';
@@ -249,6 +253,7 @@ class TimerManager {
         const state = this.timers.get(taskId);
         if (!state) return;
 
+        // Stop the timer
         state.isRunning = false;
         state.isPaused = false;
         state.remainingSeconds = 0;
@@ -266,6 +271,7 @@ class TimerManager {
             taskCard.classList.add('task-completed');
         }
 
+        // Close fullscreen modal if open for this task
         if (this.fullscreenTaskId === taskId) {
             const modal = bootstrap.Modal.getInstance(document.getElementById('fullscreenTimerModal'));
             if (modal) {
@@ -285,6 +291,7 @@ class TimerManager {
         if (taskIdInput && actualMinutesInput) {
             taskIdInput.value = taskId;
             actualMinutesInput.value = actualMinutes;
+            // Use HTMLFormElement.prototype.submit to ensure we get the correct submit method
             HTMLFormElement.prototype.submit.call(form);
         }
     }
@@ -315,6 +322,8 @@ class TimerManager {
                 this.updateTimerControls(taskId, 'idle');
             }
         }
+
+        // Show modal
         const modal = new bootstrap.Modal(document.getElementById('fullscreenTimerModal'));
         modal.show();
     }
@@ -395,6 +404,8 @@ class TimerManager {
             const taskId = parseInt(element.id.replace('timer-', ''));
             existingTaskIds.add(taskId);
         });
+
+        // Remove timer states for tasks that no longer exist
         for (const taskId of this.timers.keys()) {
             if (!existingTaskIds.has(taskId)) {
                 this.timers.delete(taskId);
@@ -404,10 +415,12 @@ class TimerManager {
                 }
             }
         }
+
         this.saveTimerStates();
     }
 }
 
+// TimerManager and all timer logic (merged, see previous resolution)
 // Theme toggle logic (global)
 function setTheme(theme) {
     document.body.setAttribute('data-theme', theme);
@@ -468,7 +481,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
     // Set theme from localStorage or default to light
     const savedTheme = localStorage.getItem('theme') || 'light';
     setTheme(savedTheme);

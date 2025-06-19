@@ -1,6 +1,7 @@
 import os
 import logging
 from datetime import datetime, date
+from flask_socketio import SocketIO
 
 from flask import Flask, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
@@ -36,6 +37,7 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=365*100)
 
 # initialize extensions
+socketio = SocketIO(app)
 db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'

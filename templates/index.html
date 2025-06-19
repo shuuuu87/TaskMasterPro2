@@ -1,6 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Flash Notifications -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="row mb-3">
+      <div class="col-12">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ 'success' if category == 'success' else 'info' if category == 'info' else 'warning' if category == 'warning' else 'secondary' }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endwith %}
+
 <!-- Due Task Reminders -->
 {% if due_notifications %}
 <div class="row mb-3">
@@ -25,6 +41,26 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         {% endfor %}
+        <!-- Pagination for notifications -->
+        <nav aria-label="Notification pagination">
+            <ul class="pagination justify-content-center">
+                {% if global_notifications_pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('home.index', notif_page=global_notifications_pagination.prev_num, page=tasks_pagination.page) }}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">Page {{ global_notifications_pagination.page }} of {{ global_notifications_pagination.pages }}</span></li>
+                {% if global_notifications_pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('home.index', notif_page=global_notifications_pagination.next_num, page=tasks_pagination.page) }}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 </div>
 {% endif %}
@@ -43,7 +79,7 @@
                         <div class="display-6 fw-bold">{{ current_user.total_score }} points</div>
                         {% set badge = current_user.get_badge() %}
                         <span class="badge" style="background-color: {{ badge.color }}; font-size: 1rem;">
-                            <i class="fas fa-medal me-1"></i>{{ badge.name }}
+                            <i class="fas {{ badge.icon }} me-1"></i>{{ badge.name }}
                         </span>
                     </div>
                 </div>
@@ -177,9 +213,8 @@
     <div class="col-12">
         <h4 class="mb-3">
             <i class="fas fa-list-check me-2"></i>Active Tasks
-            <span class="badge bg-secondary">{{ tasks|length }}</span>
+            <span class="badge bg-secondary">{{ tasks_pagination.total }}</span>
         </h4>
-        
         {% if tasks %}
         <div class="row g-3">
             {% for task in tasks %}
@@ -225,6 +260,26 @@
             </div>
             {% endfor %}
         </div>
+        <!-- Pagination for tasks -->
+        <nav aria-label="Task pagination">
+            <ul class="pagination justify-content-center mt-4">
+                {% if tasks_pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('home.index', page=tasks_pagination.prev_num, notif_page=global_notifications_pagination.page) }}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">Page {{ tasks_pagination.page }} of {{ tasks_pagination.pages }}</span></li>
+                {% if tasks_pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('home.index', page=tasks_pagination.next_num, notif_page=global_notifications_pagination.page) }}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
         {% else %}
         <div class="text-center py-5">
             <i class="fas fa-clipboard-list display-1 text-muted mb-3"></i>
@@ -271,11 +326,16 @@
     </div>
   </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script>
 // Initialize timer manager when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    window.timerManager = new TimerManager();
-});
+if (!window.timerManager) {
+    document.addEventListener('DOMContentLoaded', function() {
+        window.timerManager = new TimerManager();
+    });
+}
 </script>
 {% endblock %}

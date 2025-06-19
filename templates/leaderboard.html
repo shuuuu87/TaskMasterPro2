@@ -59,7 +59,7 @@
                                 <td>
                                     {% set badge = user.get_badge() %}
                                     <span class="badge" style="background-color: {{ badge.color }};">
-                                        <i class="fas fa-medal me-1"></i>{{ badge.name }}
+                                        <i class="fas {{ badge.icon }} me-1"></i>{{ badge.name }}
                                     </span>
                                 </td>
                                 <td>
@@ -80,7 +80,7 @@
                                 <td>
                                     {{ user.last_active_display }}
                                 </td>
-                             </tr>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -108,19 +108,18 @@
             </div>
             <div class="card-body">
                 <p class="mb-3">Earn points by completing tasks and unlock amazing badges! Here's how the badge system works:</p>
-                
                 <div class="row g-3">
                     <div class="col-md-6 col-lg-4">
                         <div class="badge-info-card">
                             <h6 class="fw-bold">Beginner Tiers</h6>
                             <ul class="list-unstyled small mb-0">
-                                <li><span class="badge" style="background-color: #8B4513;"><i class="fas fa-medal me-1"></i>Wood</span> 0 points</li>
-                                <li><span class="badge" style="background-color: #CD7F32;"><i class="fas fa-medal me-1"></i>Bronze</span> 1-50 points</li>
-                                <li><span class="badge" style="background-color: #B87333;"><i class="fas fa-medal me-1"></i>Bronze 2</span> 51-100 points</li>
-                                <li><span class="badge" style="background-color: #A97142;"><i class="fas fa-medal me-1"></i>Bronze 3</span> 101-150 points</li>
-                                <li><span class="badge" style="background-color: #C0C0C0;"><i class="fas fa-medal me-1"></i>Silver</span> 151-200 points</li>
-                                <li><span class="badge" style="background-color: #BFC1C2;"><i class="fas fa-medal me-1"></i>Silver 2</span> 201-300 points</li>
-                                <li><span class="badge" style="background-color: #AFAFAF;"><i class="fas fa-medal me-1"></i>Silver 3</span> 301-400 points</li>
+                                <li><span class="badge" style="background-color: #8B4513;"><i class="fas fa-tree me-1"></i>Wood</span> 0 points</li>
+                                <li><span class="badge" style="background-color: #CD7F32;"><i class="fas fa-seedling me-1"></i>Bronze</span> 1-50 points</li>
+                                <li><span class="badge" style="background-color: #B87333;"><i class="fas fa-leaf me-1"></i>Bronze 2</span> 51-100 points</li>
+                                <li><span class="badge" style="background-color: #A97142;"><i class="fas fa-leaf me-1"></i>Bronze 3</span> 101-150 points</li>
+                                <li><span class="badge" style="background-color: #C0C0C0;"><i class="fas fa-gem me-1"></i>Silver</span> 151-200 points</li>
+                                <li><span class="badge" style="background-color: #BFC1C2;"><i class="fas fa-gem me-1"></i>Silver 2</span> 201-300 points</li>
+                                <li><span class="badge" style="background-color: #AFAFAF;"><i class="fas fa-gem me-1"></i>Silver 3</span> 301-400 points</li>
                             </ul>
                         </div>
                     </div>
@@ -128,14 +127,14 @@
                         <div class="badge-info-card">
                             <h6 class="fw-bold">Intermediate Tiers</h6>
                             <ul class="list-unstyled small mb-0">
-                                <li><span class="badge" style="background-color: #FFD700;"><i class="fas fa-medal me-1"></i>Gold</span> 401-500 points</li>
-                                <li><span class="badge" style="background-color: #FFC300;"><i class="fas fa-medal me-1"></i>Gold 2</span> 501-600 points</li>
-                                <li><span class="badge" style="background-color: #FFB300;"><i class="fas fa-medal me-1"></i>Gold 3</span> 601-700 points</li>
-                                <li><span class="badge" style="background-color: #FFA500;"><i class="fas fa-medal me-1"></i>Gold 4</span> 701-800 points</li>
-                                <li><span class="badge" style="background-color:#E5E4E2;"><i class="fas fa-medal me-1"></i>Platinum</span> 801-950 points</li>
-                                <li><span class="badge" style="background-color: #D4D4D4;"><i class="fas fa-medal me-1"></i>Platinum 2</span> 951-1100 points</li>
-                                <li><span class="badge" style="background-color: #B0B0B0;"><i class="fas fa-medal me-1"></i>Platinum 3</span> 1101-1250 points</li>
-                                <li><span class="badge" style="background-color: #A9A9A9;"><i class="fas fa-medal me-1"></i>Platinum 4</span> 1251-1400 points</li>
+                                <li><span class="badge" style="background-color: #FFD700;"><i class="fas fa-star me-1"></i>Gold</span> 401-500 points</li>
+                                <li><span class="badge" style="background-color: #FFC300;"><i class="fas fa-star-half-alt me-1"></i>Gold 2</span> 501-600 points</li>
+                                <li><span class="badge" style="background-color: #FFB300;"><i class="fas fa-star-half-alt me-1"></i>Gold 3</span> 601-700 points</li>
+                                <li><span class="badge" style="background-color: #FFA500;"><i class="fas fa-star-half-alt me-1"></i>Gold 4</span> 701-800 points</li>
+                                <li><span class="badge" style="background-color:#E5E4E2;"><i class="fas fa-diamond me-1"></i>Platinum</span> 801-950 points</li>
+                                <li><span class="badge" style="background-color: #D4D4D4;"><i class="fas fa-diamond me-1"></i>Platinum 2</span> 951-1100 points</li>
+                                <li><span class="badge" style="background-color: #B0B0B0;"><i class="fas fa-diamond me-1"></i>Platinum 3</span> 1101-1250 points</li>
+                                <li><span class="badge" style="background-color: #A9A9A9;"><i class="fas fa-diamond me-1"></i>Platinum 4</span> 1251-1400 points</li>
                             </ul>
                         </div>
                     </div>
@@ -143,14 +142,14 @@
                         <div class="badge-info-card">
                             <h6 class="fw-bold">Advanced Tiers</h6>
                             <ul class="list-unstyled small mb-0">
-                                <li><span class="badge" style="background-color: #61e2ff;"><i class="fas fa-medal me-1"></i>Diamond</span> 1401-1550 points</li>
-                                <li><span class="badge" style="background-color: #00BFFF;"><i class="fas fa-medal me-1"></i>Diamond 2</span> 1551-1750 points</li>
-                                <li><span class="badge" style="background-color: #1E90FF;"><i class="fas fa-medal me-1"></i>Diamond 3</span> 1751-1950 points</li>
-                                <li><span class="badge" style="background-color: #4682B4;"><i class="fas fa-medal me-1"></i>Diamond 4</span> 1951-2200 points</li>
-                                <li><span class="badge" style="background-color: #fd1e00;"><i class="fas fa-medal me-1"></i>Heroic</span> 2201-2450 points</li>
-                                <li><span class="badge" style="background-color: #9932CC;"><i class="fas fa-medal me-1"></i>Master</span> 2451-2850 points</li>
-                                <li><span class="badge" style="background-color: #4B0082;"><i class="fas fa-medal me-1"></i>Elite Master</span> 2851-3200 points</li>
-                                <li><span class="badge" style="background-color: #ff9900;"><i class="fas fa-medal me-1"></i>Grand Master</span> 3201-3600 points</li>
+                                <li><span class="badge" style="background-color: #61e2ff;"><i class="fas fa-gem me-1"></i>Diamond</span> 1401-1550 points</li>
+                                <li><span class="badge" style="background-color: #00BFFF;"><i class="fas fa-gem me-1"></i>Diamond 2</span> 1551-1750 points</li>
+                                <li><span class="badge" style="background-color: #1E90FF;"><i class="fas fa-gem me-1"></i>Diamond 3</span> 1751-1950 points</li>
+                                <li><span class="badge" style="background-color: #4682B4;"><i class="fas fa-gem me-1"></i>Diamond 4</span> 1951-2200 points</li>
+                                <li><span class="badge" style="background-color: #fd1e00;"><i class="fas fa-fire me-1"></i>Heroic</span> 2201-2450 points</li>
+                                <li><span class="badge" style="background-color: #9932CC;"><i class="fas fa-chess-king me-1"></i>Master</span> 2451-2850 points</li>
+                                <li><span class="badge" style="background-color: #4B0082;"><i class="fas fa-chess-queen me-1"></i>Elite Master</span> 2851-3200 points</li>
+                                <li><span class="badge" style="background-color: #ff9900;"><i class="fas fa-crown me-1"></i>Grand Master</span> 3201-3600 points</li>
                             </ul>
                         </div>
                     </div>
@@ -158,21 +157,20 @@
                         <div class="badge-info-card">
                             <h6 class="fw-bold">Legend & Beyond</h6>
                             <ul class="list-unstyled small mb-0">
-                                <li><span class="badge" style="background-color: #796AFF;"><i class="fas fa-medal me-1"></i>Ascendant</span> 3601-4000 points</li>
-                                <li><span class="badge" style="background-color: #2F00FF;"><i class="fas fa-medal me-1"></i>Mythic</span> 4001-4500 points</li>
-                                <li><span class="badge" style="background-color: #0C004D;"><i class="fas fa-medal me-1"></i>Immortal</span> 4501-5000 points</li>
-                                <li><span class="badge" style="background-color: #010016;"><i class="fas fa-medal me-1"></i>Celestial</span> 5001-5500 points</li>
-                                <li><span class="badge" style="background-color: #00F2FF;"><i class="fas fa-medal me-1"></i>Supreme</span> 5501-6000 points</li>
-                                <li><span class="badge" style="background-color: #4587E3;"><i class="fas fa-medal me-1"></i>Infinity</span> 6001-6500 points</li>
-                                <li><span class="badge" style="background-color: #ff6200;"><i class="fas fa-medal me-1"></i>GrandmasterII</span> 6501-7000 points</li>
+                                <li><span class="badge" style="background-color: #796AFF;"><i class="fas fa-arrow-up me-1"></i>Ascendant</span> 3601-4000 points</li>
+                                <li><span class="badge" style="background-color: #2F00FF;"><i class="fas fa-magic me-1"></i>Mythic</span> 4001-4500 points</li>
+                                <li><span class="badge" style="background-color: #0C004D;"><i class="fas fa-infinity me-1"></i>Immortal</span> 4501-5000 points</li>
+                                <li><span class="badge" style="background-color: #010016;"><i class="fas fa-moon me-1"></i>Celestial</span> 5001-5500 points</li>
+                                <li><span class="badge" style="background-color: #00F2FF;"><i class="fas fa-trophy me-1"></i>Supreme</span> 5501-6000 points</li>
+                                <li><span class="badge" style="background-color: #4587E3;"><i class="fas fa-infinity me-1"></i>Infinity</span> 6001-6500 points</li>
+                                <li><span class="badge" style="background-color: #ff6200;"><i class="fas fa-chess-knight me-1"></i>GrandmasterII</span> 6501-7000 points</li>
                                 <li><span class="badge" style="background-color: #FFD700;"><i class="fas fa-medal me-1"></i>Hall of Fame</span> 7001-7500 points</li>
-                                <li><span class="badge" style="background-color: #B8860B;"><i class="fas fa-medal me-1"></i>Titan</span> 7501-8000 points</li>
-                                <li><span class="badge" style="background-color: #F0E054;"><i class="fas fa-medal me-1"></i>Legend ⚜🔱⚜</span> 8001+ points</li>
+                                <li><span class="badge" style="background-color: #B8860B;"><i class="fas fa-mountain me-1"></i>Titan</span> 7501-8000 points</li>
+                                <li><span class="badge" style="background-color: #F0E054;"><i class="fas fa-crown me-1"></i>Legend ⚜🔱⚜</span> 8001+ points</li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                
                 <div class="mt-3 p-3 bg-light rounded how-to-earn-points">
                     <h6 class="fw-bold mb-2">How to earn points:</h6>
                     <ul class="mb-0">

@@ -37,18 +37,18 @@
         <button class="btn btn-primary" type="submit">Add Subject</button>
     </div>
 </form>
-<div class="row">
+<div class="row staggered-list">
   {% for subject in subjects %}
-    <div class="col-md-4">
+    <div class="col-md-4 animated-fadein-up" style="--stagger-delay: {{ loop.index0 * 0.1 }}s">
       <div class="card mb-3">
         <div class="card-body">
           <h5>{{ subject.name }}</h5>
           <div class="progress mb-2">
             <div class="progress-bar" role="progressbar" style="width: {{ subject.progress() }}%;" aria-valuenow="{{ subject.progress() }}" aria-valuemin="0" aria-valuemax="100">{{ subject.progress() }}%</div>
           </div>
-          <a href="{{ url_for('syllabus.subject_detail', subject_id=subject.id) }}" class="btn btn-outline-primary btn-sm">Open</a>
+          <a href="{{ url_for('syllabus.subject_detail', subject_id=subject.id) }}" class="btn btn-outline-primary btn-sm btn-animated">Open</a>
           <form method="post" action="{{ url_for('syllabus.delete_subject', subject_id=subject.id) }}" style="display:inline;">
-            <button type="submit" class="btn btn-danger btn-sm ms-2" onclick="return confirm('Delete this subject and all its chapters and topics?')">Delete</button>
+            <button type="submit" class="btn btn-danger btn-sm ms-2 btn-animated" onclick="return confirm('Delete this subject and all its chapters and topics?')">Delete</button>
           </form>
         </div>
       </div>

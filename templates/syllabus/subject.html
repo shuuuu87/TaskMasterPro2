@@ -8,13 +8,13 @@
     </div>
 </form>
 {% for chapter in subject.chapters %}
-<div class="card mb-3">
+<div class="card mb-3 animated-fadein-up" style="--stagger-delay: {{ loop.index0 * 0.08 }}s">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div><strong>{{ chapter.title }}</strong></div>
         <div>
             <span class="me-3">{{ chapter.progress() }}% Complete</span>
             <form method="post" action="{{ url_for('syllabus.delete_chapter', chapter_id=chapter.id) }}" style="display:inline;">
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this chapter and all its topics?')">Delete</button>
+                <button type="submit" class="btn btn-danger btn-sm btn-animated" onclick="return confirm('Delete this chapter and all its topics?')">Delete</button>
             </form>
         </div>
     </div>
@@ -22,20 +22,20 @@
         <form method="post" action="{{ url_for('syllabus.add_topic', chapter_id=chapter.id) }}" class="mb-2">
             <div class="input-group">
                 <input type="text" name="name" class="form-control" placeholder="Add new topic..." required>
-                <button class="btn btn-secondary" type="submit">Add Topic</button>
+                <button class="btn btn-secondary btn-animated" type="submit">Add Topic</button>
             </div>
         </form>
-        <ul class="list-group">
+        <ul class="list-group staggered-list">
             {% for topic in chapter.topics %}
-            <li class="list-group-item d-flex align-items-center justify-content-between">
+            <li class="list-group-item d-flex align-items-center justify-content-between animated-fadein-up" style="--stagger-delay: {{ loop.index0 * 0.06 }}s">
                 <div class="d-flex align-items-center">
                     <form method="post" action="{{ url_for('syllabus.toggle_topic', topic_id=topic.id) }}" class="me-2">
                         <input type="checkbox" onchange="this.form.submit()" {% if topic.completed %}checked{% endif %}>
                     </form>
-                    <span {% if topic.completed %}style="text-decoration: line-through;"{% endif %}>{{ topic.name }}</span>
+                    <span class="task-label {% if topic.completed %}task-completed{% endif %}" {% if topic.completed %}style="text-decoration: line-through;"{% endif %}>{{ topic.name }}</span>
                 </div>
                 <form method="post" action="{{ url_for('syllabus.delete_topic', topic_id=topic.id) }}" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this topic?')">Delete</button>
+                    <button type="submit" class="btn btn-danger btn-sm btn-animated" onclick="return confirm('Delete this topic?')">Delete</button>
                 </form>
             </li>
             {% endfor %}

@@ -15,6 +15,15 @@
         <div class="col">
             <div class="card text-center">
                 <div class="card-body">
+                    <h5 class="card-title">Best Saved Streak</h5>
+                    <p class="display-6">{{ saved_streak }} days</p>
+                    <small class="text-muted">your best streak so far</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-center">
+                <div class="card-body">
                     <h5 class="card-title">This Week's Total</h5>
                     <p class="display-6" id="totalMinutes">-</p>
                     <small class="text-muted">minutes completed</small>
@@ -31,24 +40,17 @@
             </div>
         </div>
     </div>
-
     <div style="height: 300px;">
         <canvas id="progressChart"></canvas>
     </div>
-
     <div class="mt-5">
         <h5 class="mb-3 text-center">Task Completion Calendar</h5>
         <div id="calendar-heatmap" class="d-flex flex-wrap justify-content-center"></div>
     </div>
 </div>
-
 <style>
 .card { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-.heatmap-day {
-    width: 22px; height: 22px; margin: 2px; border-radius: 4px;
-    display: inline-block; background: #e9ecef; text-align: center;
-    font-size: 0.85em; line-height: 22px; transition: background 0.2s;
-}
+.heatmap-day { width: 22px; height: 22px; margin: 2px; border-radius: 4px; display: inline-block; background: #e9ecef; text-align: center; font-size: 0.85em; line-height: 22px; transition: background 0.2s; }
 .heatmap-day[data-count="0"] { background: #e9ecef; }
 .heatmap-day[data-count="1"] { background: #b3d8fd; }
 .heatmap-day[data-count="2"] { background: #7cc4fa; }
@@ -56,7 +58,6 @@
 .heatmap-day[data-count="4"] { background: #1876d1; color: #fff; }
 .heatmap-day[data-count="5"], .heatmap-day[data-count="more"] { background: #0a417a; color: #fff; }
 </style>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -65,7 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             document.getElementById('totalMinutes').textContent = data.total_minutes;
             document.getElementById('totalPoints').textContent = data.total_points;
-
             // Chart
             const ctx = document.getElementById('progressChart').getContext('2d');
             new Chart(ctx, {
@@ -97,22 +97,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-
-           // ...existing code...
             // Calendar heatmap
             const calendarMinutes = data.calendar_minutes;
             const today = new Date();
             const daysBack = 1000;
             const heatmap = document.getElementById('calendar-heatmap');
             heatmap.innerHTML = '';
-
             // Find min and max minutes for color scaling
             let minMinutes = Infinity, maxMinutes = 0;
             Object.values(calendarMinutes).forEach(m => {
                 if (m < minMinutes) minMinutes = m;
                 if (m > maxMinutes) maxMinutes = m;
             });
-
             // Helper to get color level based on minutes
             function getLevel(minutes) {
                 if (minutes === 0) return 0;
@@ -124,7 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (percent < 0.8) return 4;
                 return 5;
             }
-
             // Only show the last 1000 days (not including today)
             for (let i = daysBack; i > 0; i--) {
                 const d = new Date(today);
