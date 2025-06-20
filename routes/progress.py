@@ -71,9 +71,8 @@ def progress():
     streaks = {}
     streak = 0
     prev_minutes = None
-    missed_days = 0
+    missed_once = False  # ✅ forgive one zero-minute day
 
-    # ✅ Fixed: force cast to int to prevent crash
     saved_streak = int(current_user.saved_streak or 0)
 
     for i in range(days_back, -1, -1):
@@ -84,23 +83,17 @@ def progress():
             if streak > saved_streak:
                 saved_streak = streak
             streak = 1
-            missed_days = 0
+            missed_once = False  # reset forgiveness after reset
         elif minutes > 0:
-            if missed_days == 1:
-                missed_days = 0
-            elif missed_days > 1:
-                if streak > saved_streak:
-                    saved_streak = streak
-                streak = 1
-                missed_days = 0
-            else:
-                streak += 1 if prev_minutes is not None else 1
+            streak += 1 if prev_minutes is not None else 1
         else:
-            missed_days += 1
-            if missed_days == 2:
+            if not missed_once:
+                missed_once = True  # forgive first miss
+            else:
                 if streak > saved_streak:
                     saved_streak = streak
                 streak = 0
+                missed_once = False  # reset forgiveness after break
 
         streaks[str(target_date)] = streak
         prev_minutes = minutes
