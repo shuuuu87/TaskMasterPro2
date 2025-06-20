@@ -40,33 +40,71 @@
             </div>
         </div>
     </div>
+
     <div style="height: 300px;">
         <canvas id="progressChart"></canvas>
     </div>
+
     <div class="mt-5">
         <h5 class="mb-3 text-center">Task Completion Calendar</h5>
         <div id="calendar-heatmap" class="d-flex flex-wrap justify-content-center"></div>
     </div>
 </div>
+
 <style>
-.card { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-.heatmap-day { width: 22px; height: 22px; margin: 2px; border-radius: 4px; display: inline-block; background: #e9ecef; text-align: center; font-size: 0.85em; line-height: 22px; transition: background 0.2s; }
+.card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.heatmap-day {
+    width: 22px;
+    height: 22px;
+    margin: 2px;
+    border-radius: 4px;
+    display: inline-block;
+    background: #e9ecef;
+    text-align: center;
+    font-size: 0.85em;
+    line-height: 22px;
+    transition: background 0.2s;
+    position: relative;
+}
 .heatmap-day[data-count="0"] { background: #e9ecef; }
 .heatmap-day[data-count="1"] { background: #b3d8fd; }
 .heatmap-day[data-count="2"] { background: #7cc4fa; }
 .heatmap-day[data-count="3"] { background: #399cf6; }
 .heatmap-day[data-count="4"] { background: #1876d1; color: #fff; }
 .heatmap-day[data-count="5"], .heatmap-day[data-count="more"] { background: #0a417a; color: #fff; }
+
+.forgiven-day::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+}
 </style>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     fetch('/progress_data')
         .then(response => response.json())
         .then(data => {
             document.getElementById('totalMinutes').textContent = data.total_minutes;
             document.getElementById('totalPoints').textContent = data.total_points;
-            // Chart
+
+            const forgivenDays = data.forgiven_days || [];
+
+            const today = new Date();
+            const last7Dates = Array.from({length: 7}, (_, i) => {
+                const d = new Date(today);
+                d.setDate(today.getDate() - (6 - i));
+                return d.toISOString().slice(0, 10);
+            });
+
             const ctx = document.getElementById('progressChart').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
@@ -80,36 +118,48 @@ document.addEventListener('DOMContentLoaded', function() {
                         borderWidth: 3,
                         fill: true,
                         tension: 0.4,
-                        pointBackgroundColor: '#007bff',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2,
                         pointRadius: 6,
-                        pointHoverRadius: 8
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: last7Dates.map(date =>
+                            forgivenDays.includes(date) ? 'red' : '#007bff'
+                        )
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    const dateStr = last7Dates[ctx.dataIndex];
+                                    const isForgiven = forgivenDays.includes(dateStr);
+                                    return `${ctx.dataset.label}: ${ctx.formattedValue} minutes${isForgiven ? ' (Forgiven 🔴)' : ''}`;
+                                }
+                            }
+                        }
+                    },
                     scales: {
                         y: { beginAtZero: true, title: { display: true, text: 'Minutes' } },
                         x: { title: { display: true, text: 'Days' } }
                     }
                 }
             });
-            // Calendar heatmap
+
+            // Calendar Heatmap
             const calendarMinutes = data.calendar_minutes;
-            const today = new Date();
-            const daysBack = 1000;
             const heatmap = document.getElementById('calendar-heatmap');
             heatmap.innerHTML = '';
-            // Find min and max minutes for color scaling
+
             let minMinutes = Infinity, maxMinutes = 0;
             Object.values(calendarMinutes).forEach(m => {
                 if (m < minMinutes) minMinutes = m;
                 if (m > maxMinutes) maxMinutes = m;
             });
-            // Helper to get color level based on minutes
+
             function getLevel(minutes) {
                 if (minutes === 0) return 0;
                 if (maxMinutes === minMinutes) return 5;
@@ -120,8 +170,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (percent < 0.8) return 4;
                 return 5;
             }
-            // Only show the last 1000 days (not including today)
-            for (let i = daysBack; i > 0; i--) {
+
+            for (let i = 1000; i > 0; i--) {
                 const d = new Date(today);
                 d.setDate(today.getDate() - i);
                 const key = d.toISOString().slice(0, 10);
@@ -129,11 +179,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 const level = getLevel(minutes);
                 const streaks = data.calendar_streaks || {};
                 const streak = streaks[key] !== undefined ? streaks[key] : 0;
+
                 const dayDiv = document.createElement('div');
                 dayDiv.className = 'heatmap-day';
                 dayDiv.setAttribute('data-count', level);
-                dayDiv.title = `${key}: ${minutes} minute${minutes === 1 ? '' : 's'} completed\nStreak: ${streak} day${streak === 1 ? '' : 's'}`;
+                dayDiv.title = `${key}: ${minutes} minutes\nStreak: ${streak} day${streak === 1 ? '' : 's'}`;
                 dayDiv.textContent = d.getDate();
+
+                if (forgivenDays.includes(key)) {
+                    dayDiv.classList.add('forgiven-day');
+                }
+
                 heatmap.appendChild(dayDiv);
                 if (d.getDay() === 0) heatmap.appendChild(document.createElement('br'));
             }

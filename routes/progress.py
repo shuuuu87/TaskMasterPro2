@@ -8,7 +8,6 @@ from collections import defaultdict
 
 progress_bp = Blueprint('progress', __name__)
 
-# 🔥 Helper to calculate current streak (used optionally if needed)
 def get_current_streak(user):
     today = date.today()
     day = today
@@ -71,7 +70,7 @@ def progress():
     streaks = {}
     streak = 0
     prev_minutes = None
-    missed_once = False  # ✅ forgive one zero-minute day
+    missed_count = 0  # ✅ allow up to 2 forgiven days
 
     saved_streak = int(current_user.saved_streak or 0)
 
@@ -83,17 +82,17 @@ def progress():
             if streak > saved_streak:
                 saved_streak = streak
             streak = 1
-            missed_once = False  # reset forgiveness after reset
+            missed_count = 0
         elif minutes > 0:
             streak += 1 if prev_minutes is not None else 1
         else:
-            if not missed_once:
-                missed_once = True  # forgive first miss
+            if missed_count < 2:
+                missed_count += 1  # ✅ forgive up to 2 times
             else:
                 if streak > saved_streak:
                     saved_streak = streak
                 streak = 0
-                missed_once = False  # reset forgiveness after break
+                missed_count = 0  # reset forgiveness after break
 
         streaks[str(target_date)] = streak
         prev_minutes = minutes
@@ -109,7 +108,6 @@ def progress():
     yesterday_minutes = current_user.get_daily_minutes(yesterday)
     current_streak = streaks[str(today)] if today_minutes > 0 else streaks[str(yesterday)]
 
-    # 💬 Flash messages
     if current_streak == 0:
         flash(f"😢 You lost your streak. Your last saved streak was {saved_streak} days. Start again today!")
     elif current_streak == 1:
@@ -137,8 +135,10 @@ def progress_data():
 
     calendar_minutes = {}
     streaks = {}
+    forgiven_days = []  # ✅ to show red dots
     streak = 0
     prev_minutes = None
+    missed_count = 0  # ✅ allow 2 forgiveness total
 
     for i in range(days_back, -1, -1):
         target_date = today - timedelta(days=i)
@@ -152,8 +152,13 @@ def progress_data():
                 streak = 1
             streaks[str(target_date)] = streak
         else:
-            if prev_minutes is not None and prev_minutes > 0:
-                streak = 0
+            if missed_count < 2:
+                missed_count += 1
+                forgiven_days.append(str(target_date))  # ✅ mark for red dot
+            else:
+                if prev_minutes is not None and prev_minutes > 0:
+                    streak = 0
+                missed_count = 0
             streaks[str(target_date)] = streak
 
         prev_minutes = minutes
@@ -164,5 +169,6 @@ def progress_data():
         'total_minutes': sum(week_data),
         'total_points': current_user.total_score,
         'calendar_minutes': calendar_minutes,
-        'calendar_streaks': streaks
+        'calendar_streaks': streaks,
+        'forgiven_days': forgiven_days  # ✅ send to frontend for both chart + heatmap
     })
