@@ -3,56 +3,60 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-4">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h2 class="card-title text-center mb-4">
-                    <i class="fas fa-sign-in-alt text-primary me-2"></i>Sign In
-                </h2>
-                
-                <form method="POST">
-                    {{ form.hidden_tag() }}
-                    
-                    <div class="mb-3">
-                        {{ form.username.label(class="form-label") }}
-                        {{ form.username(class="form-control") }}
-                        {% if form.username.errors %}
-                        <div class="text-danger small">
-                            {% for error in form.username.errors %}
-                            <div>{{ error }}</div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        {{ form.password.label(class="form-label") }}
-                        {{ form.password(class="form-control") }}
-                        {% if form.password.errors %}
-                        <div class="text-danger small">
-                            {% for error in form.password.errors %}
-                            <div>{{ error }}</div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
+        <!-- Glass Wrapper START -->
+        <div class="card shadow-sm bg-transparent border-0">
+            <!--Card without white background -->
+                <div class="card-body p-4">
+                    <h2 class="card-title text-center mb-4">
+                        <i class="fas fa-sign-in-alt text-primary me-2"></i>Sign In
+                    </h2>
 
-                    <div class="form-check mb-3">
-                        {{ form.remember(class="form-check-input") }}
-                        {{ form.remember.label(class="form-check-label") }}
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ form.username.label(class="form-label") }}
+                            {{ form.username(class="form-control") }}
+                            {% if form.username.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.username.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            {{ form.password(class="form-control") }}
+                            {% if form.password.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.password.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-check mb-3">
+                            {{ form.remember(class="form-check-input") }}
+                            {{ form.remember.label(class="form-check-label") }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Don't have an account?
+                            <a href="{{ url_for('auth.register') }}" class="text-primary">Register here</a>
+                        </p>
                     </div>
-                    
-                    <div class="d-grid gap-2">
-                        {{ form.submit(class="btn btn-primary") }}
-                    </div>
-                </form>
-                
-                <div class="text-center mt-3">
-                    <p class="mb-0">Don't have an account? 
-                        <a href="{{ url_for('auth.register') }}" class="text-primary">Register here</a>
-                    </p>
                 </div>
-            </div>
         </div>
+        <!--Glass Wrapper END -->
+
         <div class="text-center mt-4">
             <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#learnMore" aria-expanded="false" aria-controls="learnMore">
                 Learn more
@@ -67,11 +71,10 @@
                         <li>Manage your study syllabus and deadlines</li>
                         <li>Secure authentication and user-friendly interface</li>
                         <li>Accessible from any device, anywhere</li>
-                        <li>some important things to know about the app:</li>
-                        <li>- You can customize your task duration of time</li>
-                        <li>- you can't change page during your time is running it can cause distraction</li>
-                        <li>- and at last stay focused and productive</li>
-
+                        <li>Some important things to know about the app:</li>
+                        <li>- You can customize your task duration</li>
+                        <li>- You can't change pages while your timer is running</li>
+                        <li>- Stay focused and productive!</li>
                     </ul>
                 </div>
             </div>

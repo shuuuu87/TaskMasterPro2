@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
+
 {% block content %}
+<div class="row justify-content-center animated-fadein-up">
+    <div class="col-md-11">
+        <div class="glass-wrapper p-4">
+
 <!-- Flash Notifications -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -72,11 +77,11 @@
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h3 class="mb-1">Welcome back, {{ current_user.username }}!</h3>
-                        <p class="mb-0">Keep up the great work on your productivity journey</p>
+                        <h3 class="mb-1" style="color: #2b2b2b;">Welcome back, {{ current_user.username }}!</h3>
+                        <p class="mb-0" style="color: #2b2b2b;">Keep up the great work on your productivity journey🔥🔥</p>
                     </div>
                     <div class="col-md-4 text-md-end">
-                        <div class="display-6 fw-bold">{{ current_user.total_score }} points</div>
+                        <div class="display-6 fw-bold" style="color: #2b2b2b;">{{ current_user.total_score }} points</div>
                         {% set badge = current_user.get_badge() %}
                         <span class="badge" style="background-color: {{ badge.color }}; font-size: 1rem;">
                             <i class="fas {{ badge.icon }} me-1"></i>{{ badge.name }}
@@ -282,9 +287,9 @@
         </nav>
         {% else %}
         <div class="text-center py-5">
-            <i class="fas fa-clipboard-list display-1 text-muted mb-3"></i>
-            <h5 class="text-muted">No active tasks</h5>
-            <p class="text-muted">Add your first task above to get started!</p>
+            <i class="fas fa-clipboard-list display-1 mb-3" style="color: #ffffff;"></i>
+            <h5 style="color: #ffffff;">No active tasks</h5>
+            <p style="color: #ffffff;">Add your first task above to get started!</p>
         </div>
         {% endif %}
     </div>

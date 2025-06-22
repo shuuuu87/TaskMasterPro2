@@ -9,8 +9,19 @@
 }
 
 body {
-    background-color: hsl(var(--background));
+    background: url('../images/dear.jpg') no-repeat center center fixed;
+    background-size: cover;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.glass-wrapper {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 /* Card Styles */
@@ -96,28 +107,63 @@ body {
     box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
 }
 
-/* --- Button Animations --- */
 .btn-animated {
-  transition: transform 0.15s, box-shadow 0.15s;
+    transition: transform 0.15s, box-shadow 0.15s;
 }
 .btn-animated:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
 .btn-animated:active {
-  transform: scale(0.95);
+    transform: scale(0.95);
 }
 
-/* Navigation */
+/* Navigation Bar */
 .navbar {
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.95) !important;
-    border-bottom: 1px solid hsl(var(--light-blue));
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-brand {
     font-weight: 700;
     font-size: 1.5rem;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    height: 100vh;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: -250px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    transition: all 0.4s ease-in-out;
+    z-index: 999;
+    padding-top: 60px;
+}
+
+.sidebar.show {
+    left: 0;
+}
+
+.sidebar a {
+    color: white;
+    padding: 15px 20px;
+    display: block;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hamburger {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #fff;
 }
 
 /* Gradient Background for Header Cards */
@@ -170,72 +216,75 @@ body {
     .modal-fullscreen .display-1 {
         font-size: 4rem;
     }
-    
+
     .timer-display {
         padding: 0.75rem;
     }
-    
+
     .timer-display .display-6 {
         font-size: 2rem;
     }
-    
+
     .card-body {
         padding: 1rem;
     }
 
-    /* Responsive leaderboard table */
     .card-header {
-      flex-direction: column !important;
-      align-items: stretch !important;
-      gap: 1rem !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 1rem !important;
     }
+
     .input-group {
-      width: 100% !important;
-      min-width: 0 !important;
+        width: 100% !important;
+        min-width: 0 !important;
     }
+
     .progress {
-      width: 100% !important;
-      margin-bottom: 0.5rem;
+        width: 100% !important;
+        margin-bottom: 0.5rem;
     }
+
     .table-responsive {
-      overflow-x: auto;
+        overflow-x: auto;
     }
+
     .table th, .table td {
-      white-space: nowrap;
-      font-size: 0.95rem;
-      padding: 0.4rem 0.5rem;
+        white-space: nowrap;
+        font-size: 0.95rem;
+        padding: 0.4rem 0.5rem;
     }
+
     .dropdown-menu {
-      min-width: 200px;
-      font-size: 0.95rem;
+        min-width: 200px;
+        font-size: 0.95rem;
     }
 }
 
-/* Accessibility: focus styles */
-.table th[tabindex="0"]:focus, .table th[tabindex="0"]:hover {
-  outline: 2px solid #007bff;
-  background: #e7f3ff;
+/* Table Accessibility */
+.table th[tabindex="0"]:focus,
+.table th[tabindex="0"]:hover {
+    outline: 2px solid #007bff;
+    background: #e7f3ff;
 }
 
-/* Notification bell badge for better contrast */
 #notif-count {
-  border: 2px solid #fff;
-  font-size: 0.8rem;
-  min-width: 1.5em;
-  min-height: 1.5em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    border: 2px solid #fff;
+    font-size: 0.8rem;
+    min-width: 1.5em;
+    min-height: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Streak/progress bar accessibility */
 #streak-bar {
-  font-size: 0.95rem;
-  color: #fff;
-  text-shadow: 0 1px 2px #0002;
+    font-size: 0.95rem;
+    color: #fff;
+    text-shadow: 0 1px 2px #0002;
 }
 
-/* Table Styles */
+/* Table Styling */
 .table {
     background: rgba(255, 255, 255, 0.8);
 }
@@ -244,26 +293,28 @@ body {
     background-color: hsl(var(--light-blue));
 }
 
-/* Alert Styles */
+/* Alerts */
 .alert {
     border: none;
     border-radius: var(--border-radius);
     border-left: 4px solid hsl(var(--primary-blue));
 }
 
-/* Form Styles */
-.form-control, .form-select {
+/* Forms */
+.form-control,
+.form-select {
     border-radius: 0.5rem;
     border: 1px solid hsl(var(--light-blue));
     transition: var(--transition);
 }
 
-.form-control:focus, .form-select:focus {
+.form-control:focus,
+.form-select:focus {
     border-color: hsl(var(--primary-blue));
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Loading Animation */
+/* Loading Spinner */
 .loading {
     animation: spin 1s linear infinite;
 }
@@ -273,19 +324,19 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Badge Enhancements */
+/* Badges */
 .badge {
     font-weight: 500;
     border-radius: 0.5rem;
     padding: 0.5em 0.75em;
 }
 
-/* Scroll Smooth */
+/* Smooth Scroll */
 html {
     scroll-behavior: smooth;
 }
 
-/* Focus Styles for Accessibility */
+/* Focus Styles */
 .btn:focus,
 .form-control:focus,
 .form-select:focus {
@@ -293,58 +344,53 @@ html {
     outline-offset: 2px;
 }
 
-/* --- Entry Animations --- */
+/* Entry Animations */
 .animated-fadein-up {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeinUp 0.5s forwards;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeinUp 0.5s forwards;
 }
 @keyframes fadeinUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 .staggered-list .animated-fadein-up {
-  animation-delay: var(--stagger-delay, 0s);
+    animation-delay: var(--stagger-delay, 0s);
 }
 
-/* --- Pulse Animation for Leaderboard/Icons --- */
 .pulse-emoji {
-  display: inline-block;
-  animation: pulse 1s infinite;
+    display: inline-block;
+    animation: pulse 1s infinite;
 }
 @keyframes pulse {
-  0%, 100% { /* transform: scale(1); */ }
-  50% { /* transform: scale(1.15); */ }
+    0%, 100% {}
+    50% {}
 }
 
-/* --- Task Completion Animation --- */
 .task-completed .task-label {
-  text-decoration: line-through;
-  color: #28a745;
-  transition: color 0.3s, text-decoration 0.3s;
+    text-decoration: line-through;
+    color: #28a745;
+    transition: color 0.3s, text-decoration 0.3s;
 }
 @keyframes bounceIn {
-  0% { transform: scale(0.7);}
-  60% { transform: scale(1.1);}
-  100% { transform: scale(1);}
+    0% { transform: scale(0.7);}
+    60% { transform: scale(1.1);}
+    100% { transform: scale(1);}
 }
 .task-completed .checkmark {
-  animation: bounceIn 0.4s;
+    animation: bounceIn 0.4s;
 }
 
-/* Completed Tasks Styling */
 .completed-task-item {
     transition: var(--transition);
     animation: slideInFromRight 0.5s ease-out;
 }
-
 .completed-task-item:hover {
     transform: translateX(5px);
     box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
 }
-
 @keyframes slideInFromRight {
     from {
         opacity: 0;
@@ -356,25 +402,22 @@ html {
     }
 }
 
-/* --- Leaderboard Rank Change Flash --- */
 .flash-bg {
-  animation: flashBg 0.7s;
+    animation: flashBg 0.7s;
 }
 @keyframes flashBg {
-  0% { background: #ffe066; }
-  100% { background: inherit; }
+    0% { background: #ffe066; }
+    100% { background: inherit; }
 }
 
-/* --- Notification Slide In/Out --- */
 .notification-slidein {
-  animation: slideInFade 0.6s;
+    animation: slideInFade 0.6s;
 }
 @keyframes slideInFade {
-  from { opacity: 0; transform: translateY(-30px);}
-  to { opacity: 1; transform: translateY(0);}
+    from { opacity: 0; transform: translateY(-30px);}
+    to { opacity: 1; transform: translateY(0);}
 }
 
-/* --- Notification Bounce --- */
 .notification-bounce {
-  animation: bounceIn 0.5s;
+    animation: bounceIn 0.5s;
 }
