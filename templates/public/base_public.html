@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}TaskMaster Pro{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      background: url("/static/dear.jpg") no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+    }
+    .sidebar {
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding-top: 20px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 240px;
+      z-index: 1000;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 12px 20px;
+      display: block;
+      transition: background 0.2s;
+    }
+    .sidebar a:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .content {
+      margin-left: 240px;
+      padding: 30px;
+      min-height: 100vh;
+      backdrop-filter: blur(8px);
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .welcome-message {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+      }
+      .content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h4 class="text-center mb-4">🌲 TaskMaster Pro</h4>
+    {% for link in nav_links %}
+      <a href="{{ link.url }}">
+        {% if link.name == 'Login' %}<i class="fas fa-sign-in-alt"></i>
+        {% elif link.name == 'Register' %}<i class="fas fa-user-plus"></i>
+        {% elif link.name == 'Home' %}<i class="fas fa-home"></i>
+        {% elif link.name == 'About' %}<i class="fas fa-info-circle"></i>
+        {% elif link.name == 'Features' %}<i class="fas fa-star"></i>
+        {% elif link.name == 'Demo' %}<i class="fas fa-play"></i>
+        {% elif link.name == 'Why Us' %}<i class="fas fa-question-circle"></i>
+        {% elif link.name == 'Preview Tasks' %}<i class="fas fa-tasks"></i>
+        {% endif %}
+        {{ link.name }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <main class="content">
+    <div class="welcome-message">
+      Welcome to our web — it looks like you are hungry for productivity 🤗
+    </div>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

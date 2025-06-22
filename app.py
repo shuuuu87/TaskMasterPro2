@@ -53,6 +53,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # Register blueprints
+from routes.public import public_bp
 from routes.auth import auth_bp
 from routes.home import home_bp
 from routes.progress import progress_bp
@@ -61,6 +62,7 @@ from routes.leaderboard import leaderboard_bp
 
 load_dotenv()
 
+app.register_blueprint(public_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(home_bp)
 app.register_blueprint(progress_bp)
