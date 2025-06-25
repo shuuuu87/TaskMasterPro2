@@ -59,6 +59,7 @@ from routes.home import home_bp
 from routes.progress import progress_bp
 from routes.syllabus import syllabus_bp
 from routes.leaderboard import leaderboard_bp
+from routes.profile import profile_bp
 
 load_dotenv()
 
@@ -68,6 +69,7 @@ app.register_blueprint(home_bp)
 app.register_blueprint(progress_bp)
 app.register_blueprint(leaderboard_bp)
 app.register_blueprint(syllabus_bp)
+app.register_blueprint(profile_bp)
 
 # Create tables
 with app.app_context():

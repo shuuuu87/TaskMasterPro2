@@ -4,25 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% if title %}{{ title }} - Task Manager Reborn{% else %}Task Manager Reborn{% endif %}</title>
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
   <!-- Custom Theme -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/forest-theme.css') }}">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/youricon.png') }}" />
   <meta property="og:image" content="{{ url_for('static', filename='images/youricon.png', _external=True) }}" />
+
   <style>
     body {
       background: url('{{ url_for('static', filename='images/dear.jpg') }}') no-repeat center center fixed;
       background-size: cover;
-      overflow-x: hidden; /* Prevents weird horizontal scroll */
+      overflow-x: hidden;
     }
+
     .glass-navbar {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
+
     .sidebar {
       height: 100vh;
       width: 250px;
@@ -35,44 +43,84 @@
       z-index: 999;
       padding-top: 60px;
     }
+
     .sidebar.show {
       left: 0;
     }
+
     .sidebar a {
       color: white;
       padding: 15px 20px;
       display: block;
       text-decoration: none;
     }
+
     .sidebar a:hover {
       background: rgba(255, 255, 255, 0.1);
     }
+
     .hamburger {
       font-size: 1.5rem;
       cursor: pointer;
       color: #fff;
+    }
+
+    .sidebar-profile {
+      border-top: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .sidebar-profile img {
+      width: 42px;
+      height: 42px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    .sidebar-profile span {
+      font-size: 0.95rem;
+    }
+
+    .sidebar-profile small {
+      font-size: 0.8rem;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
 
 <!-- Sidebar -->
-<div class="sidebar" id="sidebar">
-  <!-- Close Button -->
-  <a href="javascript:void(0)" onclick="toggleSidebar()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; color: white;">&times;</a>
+<div class="sidebar d-flex flex-column justify-content-between" id="sidebar">
+  <div>
+    <!-- Close Button -->
+    <a href="javascript:void(0)" onclick="toggleSidebar()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; color: white;">&times;</a>
+
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('home.index') }}"><i class="fas fa-home me-2"></i> Home</a>
+      <a href="{{ url_for('progress.progress') }}"><i class="fas fa-chart-line me-2"></i> Progress</a>
+      <a href="{{ url_for('leaderboard.leaderboard') }}"><i class="fas fa-trophy me-2"></i> Leaderboard</a>
+      <a href="{{ url_for('syllabus.dashboard') }}"><i class="fas fa-book me-2"></i> Syllabus</a>
+      <a href="{{ url_for('profile.view_profile') }}"><i class="fas fa-user me-2"></i> Profile</a>
+      <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt me-2"></i> Login</a>
+      <a href="{{ url_for('auth.register') }}"><i class="fas fa-user-plus me-2"></i> Register</a>
+    {% endif %}
+  </div>
+
   {% if current_user.is_authenticated %}
-    <a href="{{ url_for('home.index') }}"><i class="fas fa-home me-2"></i> Home</a>
-    <a href="{{ url_for('progress.progress') }}"><i class="fas fa-chart-line me-2"></i> Progress</a>
-    <a href="{{ url_for('leaderboard.leaderboard') }}"><i class="fas fa-trophy me-2"></i> Leaderboard</a>
-    <a href="{{ url_for('syllabus.dashboard') }}"><i class="fas fa-book me-2"></i> Syllabus</a>
-    <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-  {% else %}
-    <a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt me-2"></i> Login</a>
-    <a href="{{ url_for('auth.register') }}"><i class="fas fa-user-plus me-2"></i> Register</a>
+  <div class="sidebar-profile p-3 d-flex align-items-center gap-2">
+    <img src="{{ url_for('static', filename='images/' ~ (current_user.profile_image or 'avatar1.png')) }}?v={{ cache_id }}" alt="User Avatar">
+    <div class="d-flex flex-column">
+      <span class="fw-semibold text-white">{{ current_user.username }}</span>
+      <small>{{ current_user.email }}</small>
+    </div>
+  </div>
   {% endif %}
 </div>
 
-<!-- Optional dark overlay -->
+<!-- Optional Overlay -->
 <div id="overlay" onclick="toggleSidebar()" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 998;"></div>
 
 <!-- Navbar -->
@@ -85,7 +133,7 @@
   </div>
 </nav>
 
-<!-- Content -->
+<!-- Page Content -->
 <div class="container mt-4">
   {% block content %}{% endblock %}
 </div>
