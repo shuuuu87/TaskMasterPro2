@@ -68,7 +68,7 @@
                                     {% endif %}
                                 </td>
                                 <td class="d-flex align-items-center gap-2">
-                                    <img src="{{ url_for('static', filename='images/' ~ (user.profile_image or 'avatar1.png')) }}" 
+                                    <img src="{{ url_for('static', filename='images/' ~ (user.profile_image or 'default.png')) }}" 
                                         alt="{{ user.username }}'s Profile Image" 
                                         class="rounded-circle" 
                                         style="width: 35px; height: 35px; object-fit: cover;">
