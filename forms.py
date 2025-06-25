@@ -71,10 +71,8 @@ class ProfileForm(FlaskForm):
         ('avatar18.png', 'Avatar 18'),
         ('avatar19.png', 'Avatar 19'),
         ('avatar20.png', 'Avatar 20'),
-        ('avatar21.png', 'Avatar 21'),
-        ('avatar22.png', 'Avatar 22'),
-        ('avatar23.png', 'Avatar 23'),
-        ('avatar24.png', 'Avatar 24')
+        ('avatar21.png', 'Avatar 21')
+        
     ])
 
     submit = SubmitField('Update Profile')
