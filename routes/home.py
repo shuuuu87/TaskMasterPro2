@@ -117,6 +117,10 @@ def complete_task():
         flash(f'Task completed! You earned {points_earned} points.', 'success')
         if new_badge == 'Legend ⚜🔱⚜' and previous_badge != 'Legend ⚜🔱⚜':
             flash('Congratulations! You have mastered the art of productivity and we will never forget you. Thank you for using our app—we are proud of you!', 'success')
+        if new_badge == 'Platinum' and previous_badge != 'Platinum':
+            flash('Congratulations! You have achieved Platinum status!', 'success')
+        if new_badge == 'Diamond' and previous_badge != 'Diamond':
+            flash('Congratulations! You have achieved Diamond status!', 'success')
         # --- Recurring Task Logic ---
         # (recurrence logic removed, field no longer exists)
         # --- End Recurring Task Logic ---

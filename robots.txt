@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /login
+Disallow: /register
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /admin
+
+Allow: /
+
+Sitemap: https://taskmasterpro-b1nt.onrender.com/sitemap.xml
