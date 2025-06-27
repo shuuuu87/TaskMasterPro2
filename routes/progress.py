@@ -31,9 +31,9 @@ def calculate_streak_data(user, days_back=360):
             streaks[str(target_date)] = streak
             continue
 
-        diff = abs(previous_minutes - minutes)
+        drop = previous_minutes - minutes
 
-        if minutes > 0 and diff <= 100:
+        if minutes > 0 and drop <= 100:
             streak += 1
         elif forgive_used < 2:
             forgive_used += 1
