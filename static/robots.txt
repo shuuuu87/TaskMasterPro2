@@ -1,10 +1,8 @@
 User-agent: *
-Disallow: /login
-Disallow: /register
 Disallow: /profile
-Disallow: /dashboard
-Disallow: /admin
-
-Allow: /
+Disallow: /index
+Disallow: /progress
+Disallow: /leaderboard
+Disallow: /syllabus/
 
 Sitemap: https://taskmasterpro-b1nt.onrender.com/sitemap.xml
