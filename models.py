@@ -1,3 +1,31 @@
+# Fix: import datetime before using it in models
+from datetime import datetime, date
+from app import db
+# Race Invitation and Race Models
+class RaceInvitation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    inviter_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    invitee_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    duration_days = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending, accepted, rejected
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    race_id = db.Column(db.Integer, db.ForeignKey('race.id'))
+
+class Race(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user1_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user2_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    start_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)
+    duration_days = db.Column(db.Integer, nullable=False)
+    winner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    loser_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    winner_points = db.Column(db.Integer, default=0)
+    loser_points = db.Column(db.Integer, default=0)
+    user1_score_start = db.Column(db.Integer, default=0)
+    user2_score_start = db.Column(db.Integer, default=0)
+    status = db.Column(db.String(20), default='pending')  # pending, active, finished
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 from app import db
 from flask_login import UserMixin
 from datetime import datetime, date
@@ -151,13 +179,3 @@ class Topic(db.Model):
     name = db.Column(db.String(200), nullable=False)
     completed = db.Column(db.Boolean, default=False)
     chapter_id = db.Column(db.Integer, db.ForeignKey('chapter.id'), nullable=False)
-class Notification(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    is_active = db.Column(db.Boolean, default=True)
-class NotificationRead(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'), nullable=False)
-    read_at = db.Column(db.DateTime, default=datetime.utcnow)

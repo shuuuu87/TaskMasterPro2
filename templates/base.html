@@ -98,6 +98,7 @@
 
     {% if current_user.is_authenticated %}
       <a href="{{ url_for('home.index') }}"><i class="fas fa-home me-2"></i> Home</a>
+      <a href="{{ url_for('race.race_page') }}"><i class="fas fa-flag-checkered me-2"></i> Race</a>
       <a href="{{ url_for('progress.progress') }}"><i class="fas fa-chart-line me-2"></i> Progress</a>
       <a href="{{ url_for('leaderboard.leaderboard') }}"><i class="fas fa-trophy me-2"></i> Leaderboard</a>
       <a href="{{ url_for('syllabus.dashboard') }}"><i class="fas fa-book me-2"></i> Syllabus</a>

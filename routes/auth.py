@@ -32,7 +32,7 @@ def login():
             if not next_page or not next_page.startswith('/'):
                 next_page = url_for('home.index')
             return redirect(next_page)
-        flash('Invalid username or password')
+        flash('Invalid username or password', 'error')
     
     return render_template('login.html', title='Sign In', form=form)
 
@@ -51,9 +51,9 @@ def register():
         
         if existing_user:
             if existing_user.username == form.username.data:
-                flash('Username already exists. Please choose a different one.')
+                flash('Username already exists. Please choose a different one.', 'error')
             else:
-                flash('Email already registered. Please use a different email.')
+                flash('Email already registered. Please use a different email.', 'error')
             return render_template('register.html', title='Register', form=form)
         
         user = User(
@@ -63,7 +63,7 @@ def register():
         )
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now registered!')
+        flash('Account created successfully!', 'success')
         return redirect(url_for('auth.login'))
     
     return render_template('register.html', title='Register', form=form)
@@ -71,4 +71,5 @@ def register():
 @auth_bp.route('/logout')
 def logout():
     logout_user()
+    flash('You have been logged out.', 'info')
     return redirect(url_for('auth.login'))

@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, jsonify
-from flask_login import login_required
+from flask import Blueprint, render_template, jsonify, flash, url_for
+from flask_login import login_required, current_user
 from models import User
 from sqlalchemy import desc
 from datetime import datetime
@@ -34,6 +34,14 @@ def leaderboard():
 
     for user in all_users:
         user.last_active_display = time_since(user.last_active)
+
+    # Motivational message if current user is not 1st
+    for idx, user in enumerate(all_users):
+        if user.id == current_user.id and idx > 0:
+            ahead_user = all_users[idx - 1]
+            avatar = getattr(ahead_user, 'profile_image', 'default.png') or 'default.png'
+            flash(f"Come on! What are you doing? <img src='{url_for('static', filename='images/' + avatar)}' style='height:1.5em;vertical-align:middle;'> <b>{ahead_user.username}</b> is ahead of you now. Kick yourself up and get back in the race!", 'info')
+            break
 
     return render_template('leaderboard.html', 
                            title='Leaderboard', 

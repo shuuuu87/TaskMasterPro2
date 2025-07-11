@@ -21,9 +21,7 @@ def index():
     db.session.commit()
     # Pagination parameters
     page = request.args.get('page', 1, type=int)
-    notif_page = request.args.get('notif_page', 1, type=int)
     per_page = 6  # tasks per page
-    notif_per_page = 3  # notifications per page
     # Get incomplete tasks for current user (paginated)
     tasks_pagination = Task.query.filter_by(user_id=current_user.id, completed=False).order_by(Task.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
     tasks = tasks_pagination.items
@@ -41,21 +39,12 @@ def index():
     task_form = TaskForm()
     complete_form = CompleteTaskForm()
     profile_form = ProfileForm(original_username=current_user.username)
-    # In-app due task reminders (next 24 hours) - removed due_date logic
-    due_notifications = []
-    from models import Notification, NotificationRead
-    # Only show active notifications the user hasn't seen (paginated)
-    seen_ids = [nr.notification_id for nr in NotificationRead.query.filter_by(user_id=current_user.id).all()]
-    global_notifications_pagination = Notification.query.filter(
-        Notification.is_active==True,
-        ~Notification.id.in_(seen_ids)
-    ).order_by(Notification.created_at.desc()).paginate(page=notif_page, per_page=notif_per_page, error_out=False)
-    global_notifications = global_notifications_pagination.items
-    # Mark these notifications as read for this user
-    for notif in global_notifications:
-        nr = NotificationRead(user_id=current_user.id, notification_id=notif.id)
-        db.session.add(nr)
-    db.session.commit()
+    # Notification system removed
+    # Get pending race invitations for current user
+    from models import RaceInvitation, User
+    invitations = RaceInvitation.query.filter_by(invitee_id=current_user.id, status='pending').all()
+    for inv in invitations:
+        inv.inviter_user = User.query.get(inv.inviter_id)
     return render_template('index.html', 
                      title='Task Manager', 
                      tasks=tasks, 
@@ -66,10 +55,8 @@ def index():
                      complete_form=complete_form,
                      profile_form=profile_form,
                      current_user=current_user,
-                     global_notifications=global_notifications,
-                     due_notifications=due_notifications,
                      tasks_pagination=tasks_pagination,
-                     global_notifications_pagination=global_notifications_pagination)
+                     race_invitations=invitations)
 
 @home_bp.route('/add_task', methods=['POST'])
 @login_required

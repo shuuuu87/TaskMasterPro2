@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Flash messages for race actions -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="mb-3">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'error' else 'info' }} alert-dismissible fade show" role="alert">
+          {{ message|safe }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+  {% if active_race %}
+  <div class="alert alert-info mt-4">
+    <h5>Active Race</h5>
+    <div class="d-flex align-items-center gap-3">
+      <div>
+        <strong>You:</strong> {{ current_user.username }}<br>
+        <strong>Points:</strong> {{ user_points if user_points is not none else 0 }}
+      </div>
+      <div>
+        <strong>Opponent:</strong> {{ opponent.username if opponent else 'Unknown' }}<br>
+        <strong>Points:</strong> {{ opponent_points if opponent_points is not none else 0 }}
+      </div>
+      <div>
+        <strong>Status:</strong>
+        {% if user_points is not none and opponent_points is not none %}
+          {% if user_points > opponent_points %}
+            <span class="text-success">You are ahead!</span>
+          {% elif user_points < opponent_points %}
+            <span class="text-danger">Your opponent is ahead!</span>
+          {% else %}
+            <span class="text-warning">It's a tie!</span>
+          {% endif %}
+        {% else %}
+          <span class="text-muted">Race just started</span>
+        {% endif %}
+      </div>
+      <div><strong>Duration:</strong> {{ active_race.duration_days }} days</div>
+      <div><strong>Ends:</strong> {{ active_race.end_time.strftime('%Y-%m-%d %I:%M %p') if active_race.end_time else 'N/A' }}</div>
+      <form method="POST" action="{{ url_for('race.check_race') }}" class="ms-3">
+        <button class="btn btn-warning">Check Race Result</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">Race</h2>
+  <div class="row">
+    <div class="col-md-6">
+      <h5>Invite a User to Race</h5>
+      <ul class="list-group">
+        {% for user in users %}
+        <li class="list-group-item d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <img src="{{ url_for('static', filename='images/' ~ (user.profile_image or 'default.png')) }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+            <div>
+              <strong>{{ user.username }}</strong><br>
+              <span class="badge" style="background-color: {{ user.get_badge().color }}; color: #fff;">{{ user.get_badge().name }}</span>
+              <span class="ms-2 text-muted">{{ user.total_score }} pts</span>
+            </div>
+          </div>
+          {% if user.in_race %}
+            <button class="btn btn-secondary" disabled>Already in race</button>
+          {% else %}
+            <button class="btn btn-success invite-btn" data-userid="{{ user.id }}">Invite</button>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h5>Invitations</h5>
+      {% for invitation in invitations %}
+      <div class="card mb-3">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <img src="{{ url_for('static', filename='images/' ~ (invitation.inviter.profile_image or 'default.png')) }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+            <div>
+              <strong>{{ invitation.inviter.username }}</strong> invited you for a {{ invitation.duration_days }} day race!
+            </div>
+          </div>
+          <div>
+            <form method="POST" action="{{ url_for('race.accept_invite', invite_id=invitation.id) }}" style="display:inline;">
+              <button class="btn btn-success">Accept</button>
+            </form>
+            <form method="POST" action="{{ url_for('race.reject_invite', invite_id=invitation.id) }}" style="display:inline;">
+              <button class="btn btn-secondary">Reject</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="text-muted">No invitations.</div>
+      {% endfor %}
+    </div>
+  </div>
+  <!-- Invite Duration Modal -->
+  <div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="inviteForm" method="POST" action="{{ url_for('race.send_invite') }}">
+          <div class="modal-header">
+            <h5 class="modal-title" id="inviteModalLabel">Select Race Duration</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="user_id" id="inviteUserId">
+            <div class="mb-3">
+              <label for="duration" class="form-label">Duration</label>
+              <select class="form-select" name="duration" id="inviteDuration">
+                <option value="1">1 day</option>
+                <option value="2">2 days</option>
+                <option value="7">7 days (max)</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Invite</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var inviteModal = new bootstrap.Modal(document.getElementById('inviteModal'));
+      var inviteBtns = document.querySelectorAll('.invite-btn');
+      inviteBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.getElementById('inviteUserId').value = btn.getAttribute('data-userid');
+          inviteModal.show();
+        });
+      });
+    });
+  </script>
+</div>
+
+<!-- All Ongoing Races Card at the bottom -->
+<div class="container mt-5 mb-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-gradient-primary text-white text-center">
+      <h4 class="mb-0">All Ongoing Races</h4>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle bg-white">
+          <thead class="table-light">
+            <tr>
+              <th>User A</th>
+              <th>Points</th>
+              <th>User B</th>
+              <th>Points</th>
+              <th>Leader</th>
+              <th>Ends</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for race in all_live_races %}
+            <tr>
+              <td><strong>{{ race.user_a.username }}</strong></td>
+              <td>{{ race.user_a_points }}</td>
+              <td><strong>{{ race.user_b.username }}</strong></td>
+              <td>{{ race.user_b_points }}</td>
+              <td>
+                {% if race.leader == 'Tie' %}
+                  <span class="text-warning">Tie</span>
+                {% elif race.leader == current_user.username %}
+                  <span class="text-success">You</span>
+                {% else %}
+                  <span class="text-primary">{{ race.leader }}</span>
+                {% endif %}
+              </td>
+              <td>{{ race.end_time.strftime('%Y-%m-%d %I:%M %p') if race.end_time else 'N/A' }}</td>
+              <td>{{ race.duration_days }} days</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="text-center text-muted">No ongoing races.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
