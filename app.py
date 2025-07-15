@@ -62,6 +62,7 @@ from routes.syllabus import syllabus_bp
 from routes.leaderboard import leaderboard_bp
 from routes.profile import profile_bp
 from routes.race import race_bp
+from routes.race_result_api import race_result_api
 
 load_dotenv()
 
@@ -73,6 +74,7 @@ app.register_blueprint(leaderboard_bp)
 app.register_blueprint(syllabus_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(race_bp)
+app.register_blueprint(race_result_api)
 
 # Create tables
 with app.app_context():

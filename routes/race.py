@@ -52,18 +52,15 @@ def check_race():
         else:
             winner = loser = None
             winner_points = loser_points = 0
-        # Award points
+        # Store winner/loser and points, but do not award yet
         if winner:
-            winner.total_score += winner_points
             active_race.winner_id = winner.id
             active_race.loser_id = loser.id
             active_race.winner_points = winner_points
             active_race.loser_points = loser_points
-            flash(f'Congratulations {winner.username}, you have won this race and earned {winner_points} points!', 'success')
-            flash(f"Don't worry {loser.username}, you get 2 points for your try!", 'info')
-            loser.total_score += loser_points
         else:
-            flash('It was a tie! No extra points awarded.', 'info')
+            active_race.winner_points = 0
+            active_race.loser_points = 0
         active_race.status = 'finished'
         db.session.commit()
     else:
@@ -111,7 +108,18 @@ def accept_invite(invite_id):
     # Start race
     now = datetime.utcnow()
     end_time = now + timedelta(days=invitation.duration_days)
-    race = Race(user1_id=invitation.inviter_id, user2_id=invitation.invitee_id, start_time=now, end_time=end_time, duration_days=invitation.duration_days, status='active')
+    user1 = User.query.get(invitation.inviter_id)
+    user2 = User.query.get(invitation.invitee_id)
+    race = Race(
+        user1_id=invitation.inviter_id,
+        user2_id=invitation.invitee_id,
+        start_time=now,
+        end_time=end_time,
+        duration_days=invitation.duration_days,
+        status='active',
+        user1_score_start=user1.total_score,
+        user2_score_start=user2.total_score
+    )
     db.session.add(race)
     db.session.commit()
     invitation.status = 'accepted'
