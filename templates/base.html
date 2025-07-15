@@ -26,22 +26,6 @@
       overflow-x: hidden;
     }
 
-    /* Slide animation for page transitions */
-    .page-slide-enter {
-      animation: slideIn 0.5s forwards;
-    }
-    .page-slide-leave {
-      animation: slideOut 0.5s forwards;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(100px);}
-      to { opacity: 1; transform: translateX(0);}
-    }
-    @keyframes slideOut {
-      from { opacity: 1; transform: translateX(0);}
-      to { opacity: 0; transform: translateX(-100px);}
-    }
-
     .glass-navbar {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(12px);
@@ -152,7 +136,6 @@
 </nav>
 
 <!-- Page Content -->
-<div id="coin-animation-container" style="position:fixed; top:50%; left:50%; pointer-events:none; z-index:2000;"></div>
 <div class="container mt-4">
   {% block content %}{% endblock %}
 </div>
@@ -166,49 +149,7 @@
 
     sidebar.classList.toggle("show");
     overlay.style.display = sidebar.classList.contains("show") ? "block" : "none";
-  }
-</script>
-<script>
-// Slide effect for all page transitions
-document.addEventListener("DOMContentLoaded", function() {
-  const container = document.querySelector('.container');
-  if (container) {
-    container.classList.add('page-slide-enter');
-  }
-  document.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', function(e) {
-      if (link.target !== "_blank" && link.href && !link.href.startsWith("javascript")) {
-        const container = document.querySelector('.container');
-        if (container) {
-          container.classList.add('page-slide-leave');
-        }
-      }
-    });
-  });
-});
-
-// Coin animation function
-function triggerCoinAnimation() {
-  const container = document.getElementById('coin-animation-container');
-  if (!container) return;
-  for (let i = 0; i < 10; i++) {
-    const coin = document.createElement('div');
-    coin.innerHTML = '🪙';
-    coin.style.position = 'absolute';
-    coin.style.fontSize = '2.5rem';
-    coin.style.left = (Math.random() * 100 - 50) + 'px';
-    coin.style.top = (Math.random() * 100 - 50) + 'px';
-    coin.style.opacity = '1';
-    coin.style.transition = 'all 1s cubic-bezier(.17,.67,.83,.67)';
-    container.appendChild(coin);
-    setTimeout(() => {
-      coin.style.transform = `translateY(-120px) scale(1.5)`;
-      coin.style.opacity = '0';
-    }, 50);
-    setTimeout(() => {
-      coin.remove();
-    }, 1100);
-  }
+ 
 }
 </script>
 <script src="{{ url_for('static', filename='js/race_result_modal.js') }}"></script>
