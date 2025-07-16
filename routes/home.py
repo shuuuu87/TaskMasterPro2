@@ -25,6 +25,12 @@ def index():
     # Get incomplete tasks for current user (paginated)
     tasks_pagination = Task.query.filter_by(user_id=current_user.id, completed=False).order_by(Task.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
     tasks = tasks_pagination.items
+    notif_page = request.args.get('notif_page', 1, type=int)
+    from models import Notification
+    global_notifications_pagination = Notification.query.filter_by(
+        user_id=current_user.id
+    ).order_by(Notification.created_at.desc()).paginate(page=notif_page, per_page=5, error_out=False)
+
     # Get today's completed tasks (not paginated for now)
     from datetime import date
     today = date.today()
@@ -56,7 +62,8 @@ def index():
                      profile_form=profile_form,
                      current_user=current_user,
                      tasks_pagination=tasks_pagination,
-                     race_invitations=invitations)
+                     race_invitations=invitations,
+                     global_notifications_pagination=global_notifications_pagination)
 
 @home_bp.route('/add_task', methods=['POST'])
 @login_required
