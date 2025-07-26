@@ -25,11 +25,14 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
+import pathlib
 # Database config: Neon on Render, instance/task_manager.db locally
 db_url = os.environ.get('DATABASE_URL')
 if db_url:
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 else:
+    # Ensure the instance directory exists before using it for SQLite
+    pathlib.Path('instance').mkdir(exist_ok=True)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./instance/task_manager.db'
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
