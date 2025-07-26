@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, send_from_directory
 from flask_login import login_required, current_user
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 from models import Task, User
@@ -17,7 +18,7 @@ def google_verify():
 @login_required
 def index():
     # Update user's last active time
-    current_user.last_active = datetime.utcnow()
+    current_user.last_active = datetime.now(ZoneInfo("Asia/Kolkata"))
     db.session.commit()
     # Pagination parameters
     page = request.args.get('page', 1, type=int)
@@ -32,8 +33,7 @@ def index():
     ).order_by(Notification.created_at.desc()).paginate(page=notif_page, per_page=5, error_out=False)
 
     # Get today's completed tasks (not paginated for now)
-    from datetime import date
-    today = date.today()
+    today = datetime.now(ZoneInfo("Asia/Kolkata")).date()
     completed_today = Task.query.filter_by(
         user_id=current_user.id, 
         completed=True, 
@@ -101,7 +101,7 @@ def complete_task():
         # Update task
         task.actual_minutes = int(form.actual_minutes.data)
         task.completed = True
-        task.completed_at = datetime.utcnow()
+        task.completed_at = datetime.now(ZoneInfo("Asia/Kolkata"))
         # Calculate points and update user score
         points_earned = task.calculate_points()
         previous_badge = current_user.get_badge()['name']
@@ -151,7 +151,7 @@ def update_profile():
         if form.new_password.data:
             current_user.password_hash = generate_password_hash(form.new_password.data)
         # Update last active time
-        current_user.last_active = datetime.utcnow()
+        current_user.last_active = datetime.now(ZoneInfo("Asia/Kolkata"))
         db.session.commit()
         flash('Profile updated successfully!', 'info')
     else:

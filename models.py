@@ -1,6 +1,7 @@
 # Fix: import datetime before using it in models
 from datetime import datetime, date
-from app import db
+from zoneinfo import ZoneInfo
+from extensions import db
 # Race Invitation and Race Models
 class RaceInvitation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -8,7 +9,7 @@ class RaceInvitation(db.Model):
     invitee_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     duration_days = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(20), default='pending')  # pending, accepted, rejected
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo("Asia/Kolkata")))
     race_id = db.Column(db.Integer, db.ForeignKey('race.id'))
 
 class Race(db.Model):
@@ -25,8 +26,9 @@ class Race(db.Model):
     user1_score_start = db.Column(db.Integer, default=0)
     user2_score_start = db.Column(db.Integer, default=0)
     status = db.Column(db.String(20), default='pending')  # pending, active, finished
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-from app import db
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo("Asia/Kolkata")))
+    winner_claimed = db.Column(db.Boolean, default=False)
+    loser_claimed = db.Column(db.Boolean, default=False)
 from flask_login import UserMixin
 from datetime import datetime, date
 from sqlalchemy import func
@@ -38,7 +40,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256))
     total_score = db.Column(db.Integer, default=0)
-    last_active = db.Column(db.DateTime, default=datetime.utcnow)
+    last_active = db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo("Asia/Kolkata")))
     profile_image = db.Column(db.String(256), default='default.png')
     tasks = db.relationship('Task', backref='owner', lazy='dynamic')
     saved_streak = db.Column(db.Integer, default=0)
@@ -118,11 +120,11 @@ class User(UserMixin, db.Model):
         from datetime import timedelta
         if not self.last_active:
             return False
-        return datetime.utcnow() - self.last_active < timedelta(minutes=10)
+        return datetime.now(ZoneInfo("Asia/Kolkata")) - self.last_active < timedelta(minutes=10)
     def get_weekly_minutes(self):
         """Get total minutes completed in the last 7 days"""
         from datetime import timedelta
-        week_ago = date.today() - timedelta(days=7)
+        week_ago = datetime.now(ZoneInfo("Asia/Kolkata")).date() - timedelta(days=7)
         return db.session.query(func.sum(Task.actual_minutes)).filter(
             Task.user_id == self.id,
             Task.completed == True,
@@ -147,7 +149,7 @@ class Task(db.Model):
     actual_minutes = db.Column(db.Integer, default=0)
     completed = db.Column(db.Boolean, default=False)
     title = db.Column(db.String(100))
-    date_created = db.Column(db.Date, default=date.today)
+    date_created = db.Column(db.Date, default=lambda: datetime.now(ZoneInfo("Asia/Kolkata")).date())
     completed_at = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     reminder_sent = db.Column(db.Boolean, default=False)
@@ -183,5 +185,5 @@ class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     message = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(ZoneInfo("Asia/Kolkata")))
     read = db.Column(db.Boolean, default=False)

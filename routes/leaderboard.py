@@ -3,13 +3,14 @@ from flask_login import login_required, current_user
 from models import User
 from sqlalchemy import desc
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 leaderboard_bp = Blueprint('leaderboard', __name__)
 
 def time_since(dt):
     if not dt:
         return "Never"
-    now = datetime.utcnow()
+    now = datetime.now(ZoneInfo("Asia/Kolkata"))
     diff = now - dt
     seconds = int(diff.total_seconds())
     minutes = seconds // 60

@@ -1,14 +1,27 @@
 from flask import Blueprint, render_template, jsonify, flash
 from flask_login import login_required, current_user
-from datetime import date, timedelta
+from datetime import timedelta, datetime
+from zoneinfo import ZoneInfo
 from models import Task
 from app import db
 
 progress_bp = Blueprint('progress', __name__)
 
 # ✅ Smart Streak Calculation with Forgiveness & Minute Difference Rule
+from app import send_email
+def send_streak_break_email(user):
+    subject = "Your Productivity Streak Has Broken"
+    body = (
+        f"Hi {user.username},\n\n"
+        "You have used all your consecutive streak savers. Your streak has now broken. "
+        "Start a new streak by completing at least 2 minutes of activity today!\n\n"
+        "Keep going!\n\n"
+        "- ProductivityPilot Team"
+    )
+    send_email(subject, [user.email], body)
+
 def calculate_streak_data(user, days_back=360):
-    today = date.today()
+    today = datetime.now(ZoneInfo("Asia/Kolkata")).date()
     calendar_minutes = {}
     streaks = {}
     forgiven_days = []
@@ -16,8 +29,9 @@ def calculate_streak_data(user, days_back=360):
     streak = 0
     saved_streak = int(user.saved_streak or 0)
     current_streak = 0
-    forgive_used = 0
+    consecutive_forgives = 0
     previous_minutes = None
+    streak_broken = False
 
     for i in range(days_back, -1, -1):
         target_date = today - timedelta(days=i)
@@ -26,29 +40,32 @@ def calculate_streak_data(user, days_back=360):
 
         if previous_minutes is None:
             # First day, no previous to compare
-            streak = 1 if minutes > 0 else 0
+            streak = 1 if minutes >= 2 else 0
             previous_minutes = minutes
             streaks[str(target_date)] = streak
+            consecutive_forgives = 0 if minutes >= 2 else 1
             continue
 
         drop = previous_minutes - minutes
 
-        if minutes > 0 and drop <= 100:
+        if minutes >= 2 and drop <= 100:
             streak += 1
-        elif forgive_used < 2:
-            forgive_used += 1
-            streak += 1
+            consecutive_forgives = 0
+        elif consecutive_forgives < 2:
+            # Forgive, but do not increase streak
+            consecutive_forgives += 1
             forgiven_days.append(str(target_date))
         else:
+            # 3rd consecutive miss: break streak
             if streak > saved_streak:
                 saved_streak = streak
             streak = 0
-            forgive_used = 0
-
+            consecutive_forgives = 0
+            streak_broken = True
+            send_streak_break_email(user)
         previous_minutes = minutes
         if i == 0:
             current_streak = streak
-
         streaks[str(target_date)] = streak
 
     if streak > saved_streak:
@@ -65,7 +82,7 @@ def calculate_streak_data(user, days_back=360):
 @progress_bp.route('/progress')
 @login_required
 def progress():
-    today = date.today()
+    today = datetime.now(ZoneInfo("Asia/Kolkata")).date()
     yesterday = today - timedelta(days=1)
 
     streak_data = calculate_streak_data(current_user)
@@ -95,9 +112,9 @@ def progress():
 @progress_bp.route('/progress_data')
 @login_required
 def progress_data():
-    today = date.today()
+    today = datetime.now(ZoneInfo("Asia/Kolkata")).date()
     first_task = Task.query.filter_by(user_id=current_user.id, completed=True).order_by(Task.date_created.asc()).first()
-    first_date = first_task.date_created if first_task else today
+    first_date = first_task.date_created if first_task else datetime.now(ZoneInfo("Asia/Kolkata")).date()
     days_back = (today - first_date).days
 
     week_data = []

@@ -2,6 +2,7 @@ from flask_login import login_required, current_user
 from models import User, Race, RaceInvitation
 from app import db
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
@@ -30,7 +31,7 @@ def check_race():
     if not active_race:
         flash('No active race.', 'info')
         return redirect(url_for('race.race_page'))
-    now = datetime.utcnow()
+    now = datetime.now(ZoneInfo("Asia/Kolkata"))
     if active_race.end_time and now >= active_race.end_time:
         # Calculate points earned during race
         user1 = User.query.get(active_race.user1_id)
@@ -106,7 +107,7 @@ def accept_invite(invite_id):
         flash('Invalid invitation.', 'error')
         return redirect(url_for('race.race_page'))
     # Start race
-    now = datetime.utcnow()
+    now = datetime.now(ZoneInfo("Asia/Kolkata"))
     end_time = now + timedelta(days=invitation.duration_days)
     user1 = User.query.get(invitation.inviter_id)
     user2 = User.query.get(invitation.invitee_id)

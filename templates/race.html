@@ -41,9 +41,6 @@
       </div>
       <div><strong>Duration:</strong> {{ active_race.duration_days }} days</div>
       <div><strong>Ends:</strong> {{ active_race.end_time.strftime('%Y-%m-%d %I:%M %p') if active_race.end_time else 'N/A' }}</div>
-      <form method="POST" action="{{ url_for('race.check_race') }}" class="ms-3">
-        <button class="btn btn-warning">Check Race Result</button>
-      </form>
     </div>
   </div>
   {% endif %}

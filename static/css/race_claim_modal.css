@@ -1,0 +1,60 @@
+/* Race Claim Modal Styles */
+.race-claim-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2000;
+  background: rgba(255,255,255,0.95);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  padding: 2.5rem 2rem 2rem 2rem;
+  min-width: 320px;
+  max-width: 90vw;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.race-claim-modal-content {
+  width: 100%;
+}
+.race-claim-user-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #007bff;
+  margin-bottom: 1rem;
+}
+.race-claim-username {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.race-claim-message {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+.race-claim-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.7rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.race-claim-btn:hover {
+  background: #0056b3;
+}
+.race-claim-blur {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw; height: 100vh;
+  z-index: 1999;
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(6px);
+}
