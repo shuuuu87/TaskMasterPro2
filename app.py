@@ -1,65 +1,4 @@
-
-# -------------------- IMPORTS --------------------
-import os
-import logging
-import random
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
-from flask import Flask, send_from_directory, request
-from extensions import db
-from flask_login import LoginManager, current_user
-from flask_mail import Mail, Message
-from sqlalchemy.orm import DeclarativeBase
-from werkzeug.middleware.proxy_fix import ProxyFix
-from dotenv import load_dotenv
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.date import DateTrigger
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-
-# -------------------- CONFIG & LOGGING --------------------
-logging.basicConfig(level=logging.DEBUG)
-load_dotenv()
-
-# -------------------- APP & EXTENSIONS INIT --------------------
-app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
-
-import pathlib
-# Database config: Neon on Render, instance/task_manager.db locally
-db_url = os.environ.get('DATABASE_URL')
-if db_url:
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-else:
-    # Ensure the instance directory exists before using it for SQLite
-    pathlib.Path('instance').mkdir(exist_ok=True)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./instance/task_manager.db'
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
-    "pool_pre_ping": True,
-}
-app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=365*100)
-
-# Flask-Mail SMTP configuration
-app.config['MAIL_SERVER'] = 'taskmaster.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'taskmasterpro37@gmail.com'
-app.config['MAIL_PASSWORD'] = 'shreyash@123'
-app.config['MAIL_DEFAULT_SENDER'] = 'taskmasterpro37@gmail.com'
-
-# -------------------- EXTENSIONS --------------------
-class Base(DeclarativeBase):
-    pass
-db.model_class = Base
-login_manager = LoginManager()
-mail = Mail(app)
-db.init_app(app)
-login_manager.init_app(app)
-login_manager.login_view = 'auth.login'
-login_manager.login_message = 'Please log in to access this page.'
-
-# -------------------- MOTIVATIONAL QUOTES --------------------
+# Motivational quotes and emojis for each time slot
 MOTIVATIONAL_QUOTES = {
     'morning': [
         ("Good morning! ☀️", "Rise and shine! Every day is a new opportunity to grow. 🌱"),
@@ -72,22 +11,17 @@ MOTIVATIONAL_QUOTES = {
         ("Stay Focused! 🎯", "Your only limit is your mind. Believe in yourself! 💡")
     ],
     'evening': [
-        ("Well Done! 🌙", "Every accomplishment starts with the decision to try. Reflect and recharge! 🌌"),
-        ("Evening Reflection ✨", "Success is not final, failure is not fatal: It is the courage to continue that counts. 💫"),
+        ("Good Evening! 🌜", "Reflect on your day. What did you achieve? Celebrate your wins! 🎉"),
+        ("Almost There! ⏳", "Success is not the key to happiness. Happiness is the key to success. If you love what you are doing, you will be successful! 🌟"),
         ("You Did Great Today! 🏆", "Small steps every day lead to big results. Rest well! 😴")
     ]
 }
 
-# -------------------- EMAIL HELPERS --------------------
-def send_email(subject, recipients, body):
-    try:
-        msg = Message(subject, recipients=recipients, body=body)
-        mail.send(msg)
-    except Exception as e:
-        logging.error(f"Failed to send email: {e}")
+import random
+from zoneinfo import ZoneInfo
+from models import User
 
 def send_motivational_email_to_all(time_of_day):
-    from models import User
     quotes = MOTIVATIONAL_QUOTES[time_of_day]
     subject, body = random.choice(quotes)
     with app.app_context():
@@ -96,7 +30,71 @@ def send_motivational_email_to_all(time_of_day):
             personalized_body = f"Hi {user.username},\n\n{body}\n\n- ProductivityPilot Team"
             send_email(subject, [user.email], personalized_body)
 
-# -------------------- USER SESSION --------------------
+import os
+import logging
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+from flask import Flask, send_from_directory, request
+from extensions import db
+from flask_login import LoginManager, current_user
+from flask_mail import Mail, Message
+from sqlalchemy.orm import DeclarativeBase
+from werkzeug.middleware.proxy_fix import ProxyFix
+from dotenv import load_dotenv
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.date import DateTrigger
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+
+class Base(DeclarativeBase):
+    pass
+
+db.model_class = Base
+login_manager = LoginManager()
+
+# create the app
+app = Flask(__name__)
+app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+
+# configure the database
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///task_manager.db")
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_recycle": 300,
+    "pool_pre_ping": True,
+}
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=365*100)
+
+
+# Flask-Mail SMTP configuration (using provided credentials)
+app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True') == 'True'
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', 'noreply@example.com')
+
+# initialize Flask-Mail
+mail = Mail(app)
+
+# Helper function to send emails
+def send_email(subject, recipients, body):
+    try:
+        msg = Message(subject, recipients=recipients, body=body)
+        mail.send(msg)
+    except Exception as e:
+        logging.error(f"Failed to send email: {e}")
+
+db.init_app(app)
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'
+login_manager.login_message = 'Please log in to access this page.'
+
+# update last active
 @app.before_request
 def update_last_active():
     if request.endpoint in ('static',) or request.path == '/favicon.ico':
@@ -106,12 +104,13 @@ def update_last_active():
         db.session.commit()
         logging.debug(f"Updated last_active for {current_user.username} at {current_user.last_active}")
 
+# user loader
 @login_manager.user_loader
 def load_user(user_id):
     from models import User
     return User.query.get(int(user_id))
 
-# -------------------- BLUEPRINTS --------------------
+# Register blueprints
 from routes.public import public_bp
 from routes.auth import auth_bp
 from routes.home import home_bp
@@ -123,6 +122,8 @@ from routes.race import race_bp
 from routes.race_result_api import race_result_api
 from routes.claim import claim_bp
 from routes.get_unclaimed_race import get_unclaimed_race_bp
+
+load_dotenv()
 
 app.register_blueprint(public_bp)
 app.register_blueprint(auth_bp)
@@ -136,12 +137,14 @@ app.register_blueprint(race_result_api)
 app.register_blueprint(claim_bp)
 app.register_blueprint(get_unclaimed_race_bp)
 
-# -------------------- DB & SCHEDULER INIT --------------------
+# Create tables
 with app.app_context():
     import models
     db.create_all()
 
+    # Setup APScheduler
     scheduler = BackgroundScheduler(timezone=ZoneInfo("Asia/Kolkata"))
+    # Schedule motivational emails using named functions (no lambdas)
     def send_morning_emails():
         send_motivational_email_to_all('morning')
     def send_afternoon_emails():
@@ -164,6 +167,7 @@ with app.app_context():
     scheduler.add_jobstore(SQLAlchemyJobStore(url=app.config["SQLALCHEMY_DATABASE_URI"]), 'default')
     scheduler.start()
 
+    # Schedule race finishes
     from models import Race
     def finish_race(race_id):
         race = Race.query.get(race_id)
@@ -182,11 +186,13 @@ with app.app_context():
                 replace_existing=True
             )
 
+    # Schedule periodic job to finish expired races every 3 hours
     def send_race_result_emails(race):
         from models import User
         if race.winner_id and race.loser_id:
             winner = User.query.get(race.winner_id)
             loser = User.query.get(race.loser_id)
+            # Winner email
             winner_subject = "🏆 Congratulations! You Won the Race!"
             winner_body = (
                 f"Hi {winner.username},\n\n"
@@ -196,6 +202,7 @@ with app.app_context():
                 "- ProductivityPilot Team"
             )
             send_email(winner_subject, [winner.email], winner_body)
+            # Loser email
             loser_subject = "Race Finished - Don't Give Up!"
             loser_body = (
                 f"Hi {loser.username},\n\n"
@@ -215,6 +222,7 @@ with app.app_context():
         ).all()
         for race in expired_races:
             race.status = 'finished'
+            # Send result emails if winner/loser are set
             send_race_result_emails(race)
         db.session.commit()
         if expired_races:
@@ -228,11 +236,9 @@ with app.app_context():
         replace_existing=True
     )
 
-# -------------------- ROUTES --------------------
 @app.route('/sitemap.xml')
 def sitemap_xml():
     return send_from_directory(os.path.abspath(os.path.dirname(__file__)), 'sitemap.xml', mimetype='application/xml')
 
-# -------------------- MAIN --------------------
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
