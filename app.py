@@ -30,6 +30,7 @@ def send_motivational_email_to_all(time_of_day):
             personalized_body = f"Hi {user.username},\n\n{body}\n\n- ProductivityPilot Team"
             send_email(subject, [user.email], personalized_body)
 
+
 import os
 import logging
 from datetime import datetime, timedelta
@@ -41,10 +42,12 @@ from flask_mail import Mail, Message
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from dotenv import load_dotenv
-
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+
+# Load environment variables
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -55,14 +58,15 @@ class Base(DeclarativeBase):
 db.model_class = Base
 login_manager = LoginManager()
 
+
 # create the app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-
-# configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///task_manager.db")
+# Unified database config: always use env var
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
+print("Using DB:", app.config["SQLALCHEMY_DATABASE_URI"])
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
